@@ -1,11 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/toggle-theme";
+import RepoList from "@/components/repoList";
 
-export default function Home() {
+export default async function Home() {
   return (
     <div>
-      <ModeToggle></ModeToggle>
-      <Button className="ml-5">Click Me</Button>
+      <RepoList></RepoList>
     </div>
   );
 }
