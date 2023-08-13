@@ -1,6 +1,6 @@
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { ModeToggle } from "@/components/toggle-theme";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Header() {
@@ -15,12 +15,6 @@ export default function Header() {
         >
           <GitHubLogoIcon className="h-[1.2rem] w-[1.2rem]"></GitHubLogoIcon>
         </Link>
-
-        {/* <Button variant="ghost" size="icon" className="focus:outline-none">
-          <a href="https://github.com" target="_blank">
-            <GitHubLogoIcon className="h-[1.2rem] w-[1.2rem]"></GitHubLogoIcon>
-          </a>
-        </Button> */}
         <ModeToggle></ModeToggle>
       </div>
     </header>

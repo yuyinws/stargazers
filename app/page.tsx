@@ -1,4 +1,4 @@
-import RepoList from "@/components/repoList";
+import RepoList from "@/components/repo-list";
 
 export default async function Home() {
   return (
