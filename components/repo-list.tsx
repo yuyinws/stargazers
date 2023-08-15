@@ -1,13 +1,22 @@
 "use client";
 
-import useSWR from "swr";
-import { fetcher } from "@/lib/fetch";
+import useSWR, { mutate } from "swr";
 import Loading from "@/app/loading";
 
 export default function RepoList() {
-  const { data, error, isLoading } = useSWR("/api/gh/stars", fetcher);
+  const { data, error } = useSWR("/api/gh/stars", null);
 
-  if (isLoading) {
+  async function fetchData() {
+    try {
+      const response = await fetch("/api/gh/stars");
+      const data = await response.json();
+      mutate("/api/gh/stars", data);
+    } catch (error) {}
+  }
+
+  fetchData();
+
+  if (!data) {
     return <Loading></Loading>;
   }
 

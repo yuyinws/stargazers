@@ -6,6 +6,7 @@ query GetUsers($query: String!) {
     nodes {
       ... on User {
         login
+        name
         id
         avatarUrl
       }

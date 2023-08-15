@@ -14,8 +14,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
+import { initDb, addAccount } from "@/lib/db";
+import { useToast } from "@/components/ui/use-toast";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
-export default function UserSearch() {
+export default function UserSearch({
+  getAccount,
+}: {
+  getAccount?: () => void;
+}) {
   const [open, setOpen] = React.useState(false);
   const [user, setUser] = React.useState<{
     value: string;
@@ -35,6 +42,8 @@ export default function UserSearch() {
 
   const [loading, setLoading] = React.useState(false);
 
+  const { toast } = useToast();
+
   const handleInputChange = debounce(async (event: any) => {
     try {
       setLoading(true);
@@ -50,7 +59,7 @@ export default function UserSearch() {
         ?.map((item: any) => {
           return {
             value: item.login,
-            label: item.login,
+            label: item.name || item.login,
             id: item.id,
             avatar: item.avatarUrl,
           };
@@ -64,8 +73,51 @@ export default function UserSearch() {
     }
   }, 500);
 
+  async function handleAddAccount() {
+    try {
+      if (user) {
+        const db = await initDb();
+        await addAccount(db, {
+          login: user.value,
+          avatarUrl: user.avatar,
+          name: user.label,
+          from: "search",
+        });
+
+        toast({
+          title: "Account added",
+        });
+
+        if (getAccount) {
+          getAccount();
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        variant: "destructive",
+        title: "Error adding account",
+        description: String(error),
+      });
+    }
+  }
+
   return (
     <>
+      <Button variant="outline" className="w-[270px] flex gap-3">
+        <GitHubLogoIcon className="h-[1.2rem] w-[1.2rem]"></GitHubLogoIcon>
+        Continue with GitHub
+      </Button>
+      <div className="relative w-[270px] my-4">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-[270px] border-t border-zinc-200" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            Or Search a user
+          </span>
+        </div>
+      </div>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -89,7 +141,7 @@ export default function UserSearch() {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[270px] p-0">
-          <Command>
+          <Command className="w-[270px]">
             <CommandInput onInput={handleInputChange} placeholder="Search..." />
           </Command>
           {users?.length ? (
@@ -120,7 +172,7 @@ export default function UserSearch() {
                   return (
                     <div
                       key={index}
-                      className="flex items-center gap-2 justify-center p-2"
+                      className="flex w-[270px] items-center gap-2 justify-center p-2"
                     >
                       <Skeleton className="h-6 w-6 rounded-full" />
                       <Skeleton className="flex-1 h-6" />
@@ -135,7 +187,11 @@ export default function UserSearch() {
           )}
         </PopoverContent>
       </Popover>
-      <Button className="mt-5" disabled={!user?.value}>
+      <Button
+        className="mt-5 w-[270px]"
+        onClick={handleAddAccount}
+        disabled={!user?.value}
+      >
         Add
       </Button>
     </>
