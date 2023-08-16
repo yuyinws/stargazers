@@ -3,10 +3,13 @@ import { ModeToggle } from "@/components/toggle-theme";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import Account from "@/components/account";
+import styles from "@/styles/header.module.css";
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-between sticky top-0 py-1 px-3 border-b-[1px] border-zinc-200">
+    <header
+      className={`flex items-center justify-between sticky top-0 py-1 px-3 border-b-[1px] border-zinc-200 ${styles.header}`}
+    >
       <div>Stargazers</div>
       <div className="flex items-center">
         <Link

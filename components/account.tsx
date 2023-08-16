@@ -22,11 +22,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import UserSearch from "@/components/user-search";
+import { useStarStore } from "@/store/star";
 
 export default function Account() {
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const router = useRouter();
 
   async function getAccount() {
@@ -39,6 +41,15 @@ export default function Account() {
       setAccounts(accounts);
       setDialogOpen(false);
       setOpen(false);
+
+      const localAccount = localStorage.getItem("current-acount");
+
+      if (localAccount) {
+        setCurrentAccount(JSON.parse(localAccount));
+      } else {
+        localStorage.setItem("current-acount", JSON.stringify(accounts[0]));
+        setCurrentAccount(accounts[0]);
+      }
     }
   }
 
@@ -46,19 +57,29 @@ export default function Account() {
     getAccount();
   }, []);
 
+  const { fetchStars } = useStarStore();
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Avatar className={cn("h-[2rem] w-[2rem] ml-2 cursor-pointer")}>
-          <AvatarImage src="https://avatars.githubusercontent.com/u/11247099?u=a83ed73998ba6f3048f3b671e6c1cd4789cc216f&v=4" />
-          <AvatarFallback>S</AvatarFallback>
-        </Avatar>
+        {currentAccount ? (
+          <Avatar className={cn("h-[2rem] w-[2rem] ml-2 cursor-pointer")}>
+            <AvatarImage src={currentAccount.avatarUrl} />
+            <AvatarFallback>S</AvatarFallback>
+          </Avatar>
+        ) : null}
       </PopoverTrigger>
       <PopoverContent className="w-[200px] py-2 px-0">
         <div>
           {accounts?.map((account) => (
             <div
               key={account.login}
+              onClick={() => {
+                setCurrentAccount(account);
+                localStorage.setItem("current-acount", JSON.stringify(account));
+                fetchStars();
+                setOpen(false);
+              }}
               className="flex items-center py-1 cursor-pointer gap-2 hover:bg-slate-100"
             >
               <Avatar

@@ -1,6 +1,8 @@
+"use client";
+
 import RepoList from "@/components/repo-list";
 
-export default async function Home() {
+export default function Home() {
   return (
     <div>
       <RepoList></RepoList>
