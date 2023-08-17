@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 const query = `#graphql
 query GetStarredRepositories($username: String!, $cursor: String) {
   user(login: $username) {
-    starredRepositories(first: 30, after: $cursor, orderBy: {direction: DESC, field: STARRED_AT}) {
+    starredRepositories(first: 50, after: $cursor, orderBy: {direction: DESC, field: STARRED_AT}) {
       pageInfo {
         hasNextPage
         endCursor
@@ -40,8 +40,13 @@ query GetStarredRepositories($username: String!, $cursor: String) {
 }
 `;
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const username = searchParams.get('username')
+    if (!username) {
+      return NextResponse.json({ errors: 'username is required' }, { status: 500 })
+    }
     const res = await fetch('https://api.github.com/graphql', {
       method: 'POST',
       headers: {
@@ -52,7 +57,7 @@ export async function GET() {
       body: JSON.stringify({
         query,
         variables: {
-          username: 'antfu'
+          username,
         },
       })
     })
@@ -65,7 +70,8 @@ export async function GET() {
 
     const formatedData = data?.data?.user?.starredRepositories?.edges.map((edge: any) => {
       return {
-        login: 'login',
+        id: username + edge.node.owner?.login + edge.node.name,
+        login: username,
         repo: edge.node?.name,
         forkCount: edge.node?.forkCount,
         description: edge.node?.description,

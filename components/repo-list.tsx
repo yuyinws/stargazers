@@ -1,8 +1,6 @@
-// import useSWR, { mutate } from "swr";
 import Loading from "@/app/loading";
 import { useStarStore } from "@/store/star";
 import { useEffect } from "react";
-import Balancer from "react-wrap-balancer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import styles from "@/styles/repo.module.css";
@@ -10,51 +8,78 @@ import { StarIcon } from "@radix-ui/react-icons";
 import { GitForkIcon, HomeIcon } from "lucide-react";
 import { FadeInWhenVisible } from "./motion";
 import Link from "next/link";
+import { initDb, getAllAccount } from "@/lib/db";
+import { useAccountStore } from "@/store/account";
+import { useRouter } from "next/navigation";
 
 export default function RepoList() {
-  const { fetchStars, stars, loading } = useStarStore((state) => state);
+  const { getStarFromIndexDB, stars, loading, fetchStars } = useStarStore(
+    (state) => state
+  );
+  const { setAllAccount, setCurrentAccount } = useAccountStore();
+  const router = useRouter();
+  async function getAccount() {
+    const db = await initDb();
+    const accounts = await getAllAccount(db);
+    if (accounts?.length > 0) {
+      setAllAccount(accounts);
+      const currentAccount = accounts[0];
+      setCurrentAccount(currentAccount);
+      if (!currentAccount.lastSyncAt) {
+        await fetchStars(currentAccount.login);
+      } else {
+        await getStarFromIndexDB(currentAccount.login);
+      }
+    } else {
+      router.replace("/login");
+    }
+  }
 
   useEffect(() => {
-    fetchStars();
+    getAccount();
   }, []);
 
   if (loading) {
     return <Loading></Loading>;
   } else {
     return (
-      <div className="flex flex-wrap gap-5">
-        {stars.map((star) => {
-          return (
-            <>
-              <FadeInWhenVisible>
-                <div className="rounded-lg border bg-card text-card-foreground shadow-sm sm:w-[20rem] sm:h-[10rem] xl:w-[28rem] xl:h-[16rem]  hover:shadow-lg">
-                  <div className="p-5 h-full flex flex-col justify-between gap-2">
-                    <div className="flex justify-between">
-                      <div>
-                        <div
-                          className={`mb-3 text-xl max-w-[17rem] font-semibold ${styles["repo-name"]}`}
-                        >
-                          {star.owner}/{star.repo}
-                        </div>
-                        <div
-                          className={`w-[12rem] text-sm text-muted-foreground ${styles.description}`}
-                        >
-                          {star.description}
-                        </div>
-                      </div>
+      <div className="sm:w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[94rem] m-auto">
+        <div className="flex flex-wrap gap-5">
+          {stars.map((star) => {
+            return (
+              <FadeInWhenVisible key={star.id}>
+                <div className="rounded-lg border bg-card text-card-foreground shadow-sm w-[22rem] h-[11rem]  hover:shadow-lg">
+                  <div className="px-5 py-3 h-full flex flex-col justify-between">
+                    <div className="flex flex-col gap-1">
                       <Link
                         href={`https://github.com/${star.owner}`}
                         target="_blank"
+                        className="flex items-center gap-2"
                       >
                         <Avatar
-                          className={cn(
-                            "h-[4rem] w-[4rem] ml-2 cursor-pointer"
-                          )}
+                          className={cn("h-[1.3rem] w-[1.3rem] cursor-pointer")}
                         >
                           <AvatarImage src={star.ownerAvatarUrl} />
                           <AvatarFallback>{star.repo}</AvatarFallback>
                         </Avatar>
+                        <div className="text-muted-foreground text-base">
+                          {star.owner}
+                        </div>
                       </Link>
+                      <Link
+                        href={`https://github.com${star.owner}/${star.repo}`}
+                      >
+                        <div
+                          className={`text-base font-semibold ${styles["repo-name"]}`}
+                        >
+                          {star.repo}
+                        </div>
+                      </Link>
+                      <div
+                        className={`text-sm text-muted-foreground ${styles.description}`}
+                      >
+                        {star.description}
+                      </div>
                     </div>
                     <div className="flex items-center flex-wrap gap-x-3">
                       {star.language ? (
@@ -96,37 +121,17 @@ export default function RepoList() {
                           target="_blank"
                         >
                           <HomeIcon className="w-[1rem] h-[1rem]"></HomeIcon>
-                          <span className="text-sm">Home page</span>
+                          <span className="text-sm">Home</span>
                         </Link>
                       ) : null}
                     </div>
                   </div>
                 </div>
               </FadeInWhenVisible>
-            </>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     );
-    // <>
-    //   <div className="rounded-lg border bg-card text-card-foreground shadow-sm w-[24rem] h-[12rem] hover:shadow-lg">
-    //     <div className="p-5">
-    //       <div className="flex justify-between">
-    //         <div>
-    //           <div className="mb-3 text-2xl font-semibold leading-none tracking-tight">
-    //             vuejs/vue
-    //           </div>
-    //           <Balancer className="w-[12rem] text-sm text-muted-foreground">
-    //             Card Description Card Description Card Description
-    //           </Balancer>
-    //         </div>
-    //         <Avatar className={cn("h-[4rem] w-[4rem] ml-2 cursor-pointer")}>
-    //           <AvatarImage src="" />
-    //           <AvatarFallback>S</AvatarFallback>
-    //         </Avatar>
-    //       </div>
-    //     </div>
-    //   </div>
-    // </>
   }
 }

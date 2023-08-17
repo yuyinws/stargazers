@@ -14,15 +14,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
-import { initDb, addAccount } from "@/lib/db";
+import { initDb, addAccount, getAllAccount } from "@/lib/db";
 import { useToast } from "@/components/ui/use-toast";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
+import { useAccountStore } from "@/store/account";
 
-export default function UserSearch({
-  getAccount,
-}: {
-  getAccount?: () => void;
-}) {
+export default function UserSearch() {
   const [open, setOpen] = React.useState(false);
   const [user, setUser] = React.useState<{
     value: string;
@@ -43,6 +41,11 @@ export default function UserSearch({
   const [loading, setLoading] = React.useState(false);
 
   const { toast } = useToast();
+
+  const router = useRouter();
+
+  const { setCurrentAccount, currentAccount, setAllAccount } =
+    useAccountStore();
 
   const handleInputChange = debounce(async (event: any) => {
     try {
@@ -82,18 +85,22 @@ export default function UserSearch({
           avatarUrl: user.avatar,
           name: user.label,
           from: "search",
+          lastSyncAt: "",
         });
+
+        const accounts = await getAllAccount(db);
+        setAllAccount(accounts);
+        if (!currentAccount) {
+          setCurrentAccount(accounts[0]);
+        }
 
         toast({
           title: "Account added",
         });
 
-        if (getAccount) {
-          getAccount();
-        }
+        router.replace("/");
       }
     } catch (error) {
-      console.log(error);
       toast({
         variant: "destructive",
         title: "Error adding account",

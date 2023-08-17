@@ -23,41 +23,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import UserSearch from "@/components/user-search";
 import { useStarStore } from "@/store/star";
+import { useAccountStore } from "@/store/account";
 
 export default function Account() {
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const router = useRouter();
 
-  async function getAccount() {
-    const db = await initDb();
-    const accounts = await getAllAccount(db);
-
-    if (accounts?.length === 0) {
-      router.replace("/login");
-    } else {
-      setAccounts(accounts);
-      setDialogOpen(false);
-      setOpen(false);
-
-      const localAccount = localStorage.getItem("current-acount");
-
-      if (localAccount) {
-        setCurrentAccount(JSON.parse(localAccount));
-      } else {
-        localStorage.setItem("current-acount", JSON.stringify(accounts[0]));
-        setCurrentAccount(accounts[0]);
-      }
-    }
-  }
-
-  useEffect(() => {
-    getAccount();
-  }, []);
-
-  const { fetchStars } = useStarStore();
+  const { getStarFromIndexDB } = useStarStore();
+  const { currentAccount, setCurrentAccount, allAccount } = useAccountStore();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -71,13 +44,13 @@ export default function Account() {
       </PopoverTrigger>
       <PopoverContent className="w-[200px] py-2 px-0">
         <div>
-          {accounts?.map((account) => (
+          {allAccount?.map((account) => (
             <div
               key={account.login}
               onClick={() => {
                 setCurrentAccount(account);
                 localStorage.setItem("current-acount", JSON.stringify(account));
-                fetchStars();
+                getStarFromIndexDB(account.login);
                 setOpen(false);
               }}
               className="flex items-center py-1 cursor-pointer gap-2 hover:bg-slate-100"
@@ -106,7 +79,7 @@ export default function Account() {
                   Add account
                 </AlertDialogTitle>
               </AlertDialogHeader>
-              <UserSearch getAccount={getAccount}></UserSearch>
+              <UserSearch></UserSearch>
               <AlertDialogFooter className="mt-5">
                 <AlertDialogCancel className="w-[270px]">
                   Cancel

@@ -1,6 +1,7 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb'
 
 export interface Star {
+  id: string
   login: string
   repo: string
   forkCount: number
@@ -14,8 +15,8 @@ export interface Star {
   language: string
   languageColor: string
   stargazerCount: string
-  pushedAt: Date
-  starAt: Date
+  pushedAt: string
+  starAt: string
 }
 
 export interface Account {
@@ -23,6 +24,7 @@ export interface Account {
   avatarUrl: string
   name: string
   from: 'github' | 'search'
+  lastSyncAt: string
 }
 
 interface DB extends DBSchema {
@@ -32,6 +34,7 @@ interface DB extends DBSchema {
     indexes: {
       "by_starAt": string
       "by_repo": string
+      "by_login": string
     }
   },
   accounts: {
@@ -49,11 +52,12 @@ export async function initDb() {
     upgrade(db) {
       const starStore = db.createObjectStore('stars', {
         keyPath: 'id',
-        autoIncrement: true,
+        autoIncrement: false,
       });
 
       starStore.createIndex('by_repo', 'repo', { unique: false });
       starStore.createIndex('by_starAt', 'starAt', { unique: false });
+      starStore.createIndex('by_login', 'login', { unique: false });
 
       const accountStore = db.createObjectStore('accounts', {
         keyPath: 'login',
@@ -79,6 +83,15 @@ export async function searchByStarAt(db: IDBPDatabase<DB>, start: string, end: s
   return db.getAllFromIndex('stars', 'by_starAt', IDBKeyRange.bound(start, end));
 }
 
+export async function searchStarByLogin(db: IDBPDatabase<DB>, login:string) {
+  const stars = await db.getAllFromIndex('stars', 'by_login', login);
+  stars.sort((a, b) => {
+    return Date.parse(b.starAt) - Date.parse(a.starAt)
+  })
+  
+  return stars
+}
+
 export async function addAccount(db: IDBPDatabase<DB>, account: Account) {
   const tx = db.transaction('accounts', 'readwrite')
   await tx.store.add(account)
@@ -89,7 +102,6 @@ export async function addAccount(db: IDBPDatabase<DB>, account: Account) {
 export async function getAllAccount(db: IDBPDatabase<DB>) {
   const transaction = db.transaction('accounts', 'readonly')
   const store = transaction.objectStore('accounts')
-
   const accounts = await store.getAll()
 
   return accounts
