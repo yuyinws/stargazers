@@ -1,45 +1,44 @@
 import { create } from 'zustand'
-import { Account,initDb, getAllAccount } from "@/lib/db";
+import { Account, initDb, getAllAccount } from "@/lib/db";
+import { persist } from 'zustand/middleware'
 
 interface AccountStore {
   currentAccount: Account | null
   allAccount: Account[]
   setCurrentAccount: (account: Account) => void
-  setAllAccount:  (accounts: Account[]) => Promise<void>
+  setAllAccount: (accounts: Account[]) => Promise<void>
   refreshAllAccount: () => Promise<void>
 }
 
-export const useAccountStore = create<AccountStore>((set,get) => ({
-  currentAccount: null,
-  allAccount: [],
+export const useAccountStore = create<AccountStore>()(
+  persist(
+    (set) => ({
+      currentAccount: null,
+      allAccount: [],
 
-  setCurrentAccount: (account: Account) => {
-    set(() => ({
-      currentAccount: account
-    }))
-  },
+      setCurrentAccount: (account: Account) => {
+        set(() => ({
+          currentAccount: account
+        }))
+      },
 
-  refreshCurrentAccount: () => {
-    const currentLogin = get().currentAccount?.login
-    const allAccount = get().allAccount
+      refreshAllAccount: async () => {
+        const db = await initDb();
+        const accounts = await getAllAccount(db);
 
-    set(() => ({
-      currentAccount: allAccount.find((account) => account.login === currentLogin)
-    }))
-  },
+        set(() => ({
+          allAccount: accounts
+        }))
+      },
 
-  refreshAllAccount: async () => {
-    const db = await initDb();
-    const accounts = await getAllAccount(db);
-
-    set(() => ({
-      allAccount: accounts
-    }))
-  },
-
-  setAllAccount: async (accounts: Account[]) => {
-    set(() => ({
-      allAccount: accounts
-    }))
-  }
-}))
+      setAllAccount: async (accounts: Account[]) => {
+        set(() => ({
+          allAccount: accounts
+        }))
+      }
+    }),
+    {
+      name: "account",
+    }
+  )
+)

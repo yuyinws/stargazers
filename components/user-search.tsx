@@ -166,7 +166,7 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
                     setUser(user);
                     setOpen(false);
                   }}
-                  className="flex items-center p-2 gap-2 rounded cursor-pointer hover:bg-slate-200"
+                  className="flex items-center p-2 gap-2 rounded cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800"
                 >
                   <Avatar key={user.id} className={cn("h-6 w-6")}>
                     <AvatarImage src={user.avatar} alt={user.label} />

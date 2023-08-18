@@ -83,12 +83,12 @@ export async function searchByStarAt(db: IDBPDatabase<DB>, start: string, end: s
   return db.getAllFromIndex('stars', 'by_starAt', IDBKeyRange.bound(start, end));
 }
 
-export async function searchStarByLogin(db: IDBPDatabase<DB>, login:string) {
+export async function searchStarByLogin(db: IDBPDatabase<DB>, login: string) {
   const stars = await db.getAllFromIndex('stars', 'by_login', login);
   stars.sort((a, b) => {
     return Date.parse(b.starAt) - Date.parse(a.starAt)
   })
-  
+
   return stars
 }
 
@@ -105,4 +105,18 @@ export async function getAllAccount(db: IDBPDatabase<DB>) {
   const accounts = await store.getAll()
 
   return accounts
+}
+
+export async function deleteAccount(db: IDBPDatabase<DB>,login: string) {
+  try {
+    await db.delete('accounts', login)
+    const stars = await db.getAllFromIndex('stars', 'by_login', login)
+
+    for (const star of stars) {
+      await db.delete('stars', star.id)
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
 }

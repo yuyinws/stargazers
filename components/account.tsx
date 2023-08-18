@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/popover";
 import { useState } from "react";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { Settings } from "lucide-react";
 import { Account } from "@/lib/db";
 import {
   AlertDialog,
@@ -22,6 +23,7 @@ import {
 import UserSearch from "@/components/user-search";
 import { useStarStore } from "@/store/star";
 import { useAccountStore } from "@/store/account";
+import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Account() {
@@ -36,12 +38,14 @@ export default function Account() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         {currentAccount ? (
-          <Avatar className={cn("h-[2rem] w-[2rem] ml-2 cursor-pointer")}>
-            <AvatarImage src={currentAccount.avatarUrl} />
-            <AvatarFallback>
-              <Skeleton className="h-[2rem] w-[2rem] rounded-full"></Skeleton>
-            </AvatarFallback>
-          </Avatar>
+          <div>
+            <Avatar className={cn("h-[2rem] w-[2rem] ml-2 cursor-pointer")}>
+              <AvatarImage src={currentAccount.avatarUrl} />
+              <AvatarFallback>
+                <Skeleton className="h-[2rem] w-[2rem] rounded-full"></Skeleton>
+              </AvatarFallback>
+            </Avatar>
+          </div>
         ) : null}
       </PopoverTrigger>
       <PopoverContent className="w-[200px] py-2 px-0">
@@ -60,7 +64,7 @@ export default function Account() {
                   getStarFromIndexDB(account.login);
                 }
               }}
-              className="flex items-center py-1 cursor-pointer gap-2 hover:bg-slate-100"
+              className="flex items-center py-1 cursor-pointer gap-2 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               <Avatar
                 className={cn("h-[1.4rem] w-[1.4rem] ml-2 cursor-pointer")}
@@ -70,16 +74,30 @@ export default function Account() {
                   <Skeleton className="h-[1.4rem] w-[1.4rem] rounded-full"></Skeleton>
                 </AvatarFallback>
               </Avatar>
-              <span className="text-[14px]">{account.name}</span>
+              <span className="text-sm">{account.name}</span>
             </div>
           ))}
-
           <div className="h-[1px] bg-zinc-200 my-2"></div>
           <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <AlertDialogTrigger asChild>
-              <div className="flex items-center px-2 py-1 gap-2 hover:bg-slate-100 cursor-pointer">
-                <PlusCircledIcon className="h-[1rem] w-[1rem]"></PlusCircledIcon>
-                <span className="text-[14px]">Add account</span>
+              <div className="">
+                <div className="px-2 py-1 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+                  <PlusCircledIcon className="text-secondary-foreground h-[1rem] w-[1rem]"></PlusCircledIcon>
+                  <span className="text-sm text-secondary-foreground">
+                    Add account
+                  </span>
+                </div>
+                <Link href="/settings">
+                  <div
+                    onClick={() => setOpen(false)}
+                    className="px-2 py-1 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  >
+                    <Settings className="text-secondary-foreground h-[1rem] w-[1rem]"></Settings>
+                    <span className="text-sm text-secondary-foreground">
+                      Settings
+                    </span>
+                  </div>
+                </Link>
               </div>
             </AlertDialogTrigger>
             <AlertDialogContent className="flex flex-col items-center gap-0">
