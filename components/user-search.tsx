@@ -20,7 +20,7 @@ import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useAccountStore } from "@/store/account";
 
-export default function UserSearch() {
+export default function UserSearch({ callback }: { callback?: () => void }) {
   const [open, setOpen] = React.useState(false);
   const [user, setUser] = React.useState<{
     value: string;
@@ -98,7 +98,11 @@ export default function UserSearch() {
           title: "Account added",
         });
 
-        router.replace("/");
+        if (callback) {
+          callback();
+        } else {
+          router.replace("/");
+        }
       }
     } catch (error) {
       toast({
@@ -137,7 +141,9 @@ export default function UserSearch() {
               <div className="flex items-center gap-2">
                 <Avatar className={cn("h-6 w-6")}>
                   <AvatarImage src={user.avatar} alt={user.label} />
-                  <AvatarFallback>{user.label}</AvatarFallback>
+                  <AvatarFallback>
+                    <Skeleton className="h-6 w-6 rounded-full"></Skeleton>
+                  </AvatarFallback>
                 </Avatar>
                 <span>{user.label}</span>
               </div>
@@ -164,7 +170,9 @@ export default function UserSearch() {
                 >
                   <Avatar key={user.id} className={cn("h-6 w-6")}>
                     <AvatarImage src={user.avatar} alt={user.label} />
-                    <AvatarFallback>{user.label[0]}</AvatarFallback>
+                    <AvatarFallback>
+                      <Skeleton className="h-6 w-6 rounded-full"></Skeleton>
+                    </AvatarFallback>
                   </Avatar>
 
                   {user.label}

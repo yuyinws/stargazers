@@ -7,10 +7,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { initDb, getAllAccount } from "@/lib/db";
-import { useRouter } from "next/navigation";
 import { Account } from "@/lib/db";
 import {
   AlertDialog,
@@ -24,13 +22,15 @@ import {
 import UserSearch from "@/components/user-search";
 import { useStarStore } from "@/store/star";
 import { useAccountStore } from "@/store/account";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Account() {
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const { getStarFromIndexDB } = useStarStore();
-  const { currentAccount, setCurrentAccount, allAccount } = useAccountStore();
+  const { getStarFromIndexDB, fetchStars } = useStarStore();
+  const { currentAccount, setCurrentAccount, allAccount, refreshAllAccount } =
+    useAccountStore();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -38,7 +38,9 @@ export default function Account() {
         {currentAccount ? (
           <Avatar className={cn("h-[2rem] w-[2rem] ml-2 cursor-pointer")}>
             <AvatarImage src={currentAccount.avatarUrl} />
-            <AvatarFallback>S</AvatarFallback>
+            <AvatarFallback>
+              <Skeleton className="h-[2rem] w-[2rem] rounded-full"></Skeleton>
+            </AvatarFallback>
           </Avatar>
         ) : null}
       </PopoverTrigger>
@@ -47,11 +49,16 @@ export default function Account() {
           {allAccount?.map((account) => (
             <div
               key={account.login}
-              onClick={() => {
+              onClick={async () => {
                 setCurrentAccount(account);
                 localStorage.setItem("current-acount", JSON.stringify(account));
-                getStarFromIndexDB(account.login);
                 setOpen(false);
+                if (!account.lastSyncAt) {
+                  await fetchStars(account.login);
+                  await refreshAllAccount();
+                } else {
+                  getStarFromIndexDB(account.login);
+                }
               }}
               className="flex items-center py-1 cursor-pointer gap-2 hover:bg-slate-100"
             >
@@ -59,7 +66,9 @@ export default function Account() {
                 className={cn("h-[1.4rem] w-[1.4rem] ml-2 cursor-pointer")}
               >
                 <AvatarImage src={account.avatarUrl} />
-                <AvatarFallback>S</AvatarFallback>
+                <AvatarFallback>
+                  <Skeleton className="h-[1.4rem] w-[1.4rem] rounded-full"></Skeleton>
+                </AvatarFallback>
               </Avatar>
               <span className="text-[14px]">{account.name}</span>
             </div>
@@ -79,7 +88,11 @@ export default function Account() {
                   Add account
                 </AlertDialogTitle>
               </AlertDialogHeader>
-              <UserSearch></UserSearch>
+              <UserSearch
+                callback={() => {
+                  setDialogOpen(false);
+                }}
+              ></UserSearch>
               <AlertDialogFooter className="mt-5">
                 <AlertDialogCancel className="w-[270px]">
                   Cancel
