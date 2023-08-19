@@ -19,6 +19,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useAccountStore } from "@/store/account";
+import Link from "next/link";
+import { GITHUB_CLIENT_ID } from "@/lib/constant";
 
 export default function UserSearch({ callback }: { callback?: () => void }) {
   const [open, setOpen] = React.useState(false);
@@ -115,10 +117,18 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
 
   return (
     <>
-      <Button variant="outline" className="w-[270px] flex gap-3">
-        <GitHubLogoIcon className="h-[1.2rem] w-[1.2rem]"></GitHubLogoIcon>
-        Continue with GitHub
-      </Button>
+      <Link
+        href={
+          "https://github.com/login/oauth/authorize?client_id=" +
+          GITHUB_CLIENT_ID
+        }
+      >
+        <Button variant="outline" className="w-[270px] flex gap-3">
+          <GitHubLogoIcon className="h-[1.2rem] w-[1.2rem]"></GitHubLogoIcon>
+          Continue with GitHub
+        </Button>
+      </Link>
+
       <div className="relative w-[270px] my-4">
         <div className="absolute inset-0 flex items-center">
           <span className="w-[270px] border-t border-zinc-200" />

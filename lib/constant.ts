@@ -1,0 +1,1 @@
+export const GITHUB_CLIENT_ID="Iv1.64883b45277a4b8c"
