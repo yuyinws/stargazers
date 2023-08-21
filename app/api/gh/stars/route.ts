@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import dayjs from 'dayjs'
 
 const query = `#graphql
 query GetStarredRepositories($username: String!, $cursor: String) {
@@ -85,7 +86,7 @@ export async function GET(request: Request) {
         languageColor: edge.node.primaryLanguage?.color,
         stargazerCount: edge.node?.stargazerCount,
         pushedAt: edge.node?.pushedAt,
-        starAt: edge?.starredAt
+        starAt: dayjs(edge?.starredAt).unix()
       }
     })
 

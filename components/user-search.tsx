@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { initDb, addAccount, getAllAccount } from "@/lib/db";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useAccountStore } from "@/store/account";
@@ -41,8 +41,6 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
   >([]);
 
   const [loading, setLoading] = React.useState(false);
-
-  const { toast } = useToast();
 
   const router = useRouter();
 
@@ -88,6 +86,7 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
           name: user.label,
           from: "search",
           lastSyncAt: "",
+          addedAt: new Date().toISOString(),
         });
 
         const accounts = await getAllAccount(db);
@@ -96,9 +95,7 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
           setCurrentAccount(accounts[0]);
         }
 
-        toast({
-          title: "Account added",
-        });
+        toast.success("Account added");
 
         if (callback) {
           callback();
@@ -107,9 +104,7 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
         }
       }
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error adding account",
+      toast.error("Error adding account", {
         description: String(error),
       });
     }

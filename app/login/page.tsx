@@ -4,12 +4,14 @@ import UserSearch from "@/components/user-search";
 import { initDb, getAllAccount, addAccount } from "@/lib/db";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
+import { useAccountStore } from "@/store/account";
 
 export default function Login() {
   const router = useRouter();
-  const { toast } = useToast();
   const searchParams = useSearchParams();
+
+  const accountStore = useAccountStore();
 
   const access_token = searchParams.get("access_token");
   async function getAccount() {
@@ -25,23 +27,23 @@ export default function Login() {
           avatarUrl: user.avatar_url,
           from: "github",
           lastSyncAt: "",
+          addedAt: new Date().toISOString(),
         });
 
-        toast({
-          title: "Account added",
-        });
+        toast.success("Account added");
       } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Error adding account",
+        toast.error("Error adding account", {
           description: String(error),
         });
       }
     }
 
     const accounts = await getAllAccount(db);
-
     if (accounts?.length > 0) {
+      accountStore?.setAllAccount(accounts);
+      if (!accountStore?.currentAccount) {
+        accountStore?.setCurrentAccount(accounts[0]);
+      }
       router.replace("/");
     }
   }

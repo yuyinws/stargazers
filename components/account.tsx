@@ -8,8 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { Settings } from "lucide-react";
+import { Settings, PlusCircleIcon, CheckIcon } from "lucide-react";
 import { Account } from "@/lib/db";
 import {
   AlertDialog,
@@ -25,6 +24,7 @@ import { useStarStore } from "@/store/star";
 import { useAccountStore } from "@/store/account";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 
 export default function Account() {
   const [open, setOpen] = useState(false);
@@ -39,23 +39,23 @@ export default function Account() {
       <PopoverTrigger asChild>
         {currentAccount ? (
           <div>
-            <Avatar className={cn("h-[2rem] w-[2rem] ml-2 cursor-pointer")}>
+            <Avatar className={cn("h-[1.5rem] w-[1.5rem] ml-2 cursor-pointer")}>
               <AvatarImage src={currentAccount.avatarUrl} />
               <AvatarFallback>
-                <Skeleton className="h-[2rem] w-[2rem] rounded-full"></Skeleton>
+                <Skeleton className="h-[1.5rem] w-[1.5rem] rounded-full"></Skeleton>
               </AvatarFallback>
             </Avatar>
           </div>
         ) : null}
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] py-2 px-0">
+      <PopoverContent className="w-[13rem] px-1 py-1 mt-2">
         <div>
           {allAccount?.map((account) => (
             <div
               key={account.login}
               onClick={async () => {
+                if (currentAccount?.login === account.login) return;
                 setCurrentAccount(account);
-                localStorage.setItem("current-acount", JSON.stringify(account));
                 setOpen(false);
                 if (!account.lastSyncAt) {
                   await fetchStars(account.login);
@@ -64,38 +64,42 @@ export default function Account() {
                   getStarFromIndexDB(account.login);
                 }
               }}
-              className="flex items-center py-1 cursor-pointer gap-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className={[
+                "flex py-1.5 px-2 rounded-sm justify-between items-center hover:bg-accent",
+                currentAccount?.login === account.login
+                  ? "cursor-not-allowed"
+                  : "cursor-pointer",
+              ].join(" ")}
             >
-              <Avatar
-                className={cn("h-[1.4rem] w-[1.4rem] ml-2 cursor-pointer")}
-              >
-                <AvatarImage src={account.avatarUrl} />
-                <AvatarFallback>
-                  <Skeleton className="h-[1.4rem] w-[1.4rem] rounded-full"></Skeleton>
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-sm">{account.name}</span>
+              <div className="flex gap-2">
+                <Avatar className={cn("h-[1.4rem] w-[1.4rem] cursor-pointer")}>
+                  <AvatarImage src={account.avatarUrl} />
+                  <AvatarFallback>
+                    <Skeleton className="h-[1.4rem] w-[1.4rem] rounded-full"></Skeleton>
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm">{account.name}</span>
+              </div>
+              {currentAccount!.login === account.login && (
+                <CheckIcon className="text-accent-foreground h-[1rem] w-[1rem]"></CheckIcon>
+              )}
             </div>
           ))}
-          <div className="h-[1px] bg-zinc-200 my-2"></div>
+          <Separator className="my-1"></Separator>
           <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <AlertDialogTrigger asChild>
-              <div className="">
-                <div className="px-2 py-1 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
-                  <PlusCircledIcon className="text-secondary-foreground h-[1rem] w-[1rem]"></PlusCircledIcon>
-                  <span className="text-sm text-secondary-foreground">
-                    Add account
-                  </span>
+              <div>
+                <div className="text-sm rounded-sm flex py-1.5 px-2 gap-1 items-center hover:bg-accent cursor-pointer">
+                  <PlusCircleIcon className="text-accent-foreground h-[1.2rem] w-[1.2rem]"></PlusCircleIcon>
+                  Add account
                 </div>
                 <Link href="/settings">
                   <div
                     onClick={() => setOpen(false)}
-                    className="px-2 py-1 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                    className="text-sm rounded-sm flex py-1.5 px-2 gap-1 items-center hover:bg-accent cursor-pointer"
                   >
-                    <Settings className="text-secondary-foreground h-[1rem] w-[1rem]"></Settings>
-                    <span className="text-sm text-secondary-foreground">
-                      Settings
-                    </span>
+                    <Settings className="text-accent-foreground h-[1.2rem] w-[1.2rem]"></Settings>
+                    Settings
                   </div>
                 </Link>
               </div>

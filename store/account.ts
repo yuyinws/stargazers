@@ -8,11 +8,12 @@ interface AccountStore {
   setCurrentAccount: (account: Account) => void
   setAllAccount: (accounts: Account[]) => Promise<void>
   refreshAllAccount: () => Promise<void>
+  deleteAccount: (account: Account) => Promise<void>
 }
 
 export const useAccountStore = create<AccountStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       currentAccount: null,
       allAccount: [],
 
@@ -26,8 +27,11 @@ export const useAccountStore = create<AccountStore>()(
         const db = await initDb();
         const accounts = await getAllAccount(db);
 
+        const currentAccount = accounts?.find((account) => account.login === get().currentAccount?.login)
+
         set(() => ({
-          allAccount: accounts
+          allAccount: accounts,
+          currentAccount
         }))
       },
 
@@ -35,6 +39,37 @@ export const useAccountStore = create<AccountStore>()(
         set(() => ({
           allAccount: accounts
         }))
+      },
+
+      deleteAccount: async (account: Account) => {
+        try {
+          const db = await initDb();
+          await db.delete('accounts', account.login)
+
+          const stars = await db.getAllFromIndex('stars', 'by_login', account.login)
+
+          for (const star of stars) {
+            await db.delete('stars', star.id)
+          }
+
+          const accounts = await getAllAccount(db);
+
+          set(() => ({
+            allAccount: accounts || []
+          }))
+
+          if (get().currentAccount?.login === account.login && accounts?.length > 0) {
+            set(() => ({
+              currentAccount: accounts[0]
+            }))
+          } else if (accounts?.length === 0) {
+            set(() => ({
+              currentAccount: null
+            }))
+          } 
+        } catch (error) {
+          throw error
+        }
       }
     }),
     {

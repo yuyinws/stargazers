@@ -8,30 +8,24 @@ import { StarIcon } from "@radix-ui/react-icons";
 import { GitForkIcon, HomeIcon } from "lucide-react";
 import { FadeInWhenVisible } from "./motion";
 import Link from "next/link";
-import { initDb, getAllAccount } from "@/lib/db";
 import { useAccountStore } from "@/store/account";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import dayjs from "dayjs";
 
 export default function RepoList() {
   const { getStarFromIndexDB, stars, loading, fetchStars } = useStarStore(
     (state) => state
   );
-  const { setAllAccount, setCurrentAccount, refreshAllAccount } =
-    useAccountStore();
+  const { currentAccount, refreshAllAccount } = useAccountStore();
   const router = useRouter();
   async function getAccount() {
-    const db = await initDb();
-    const accounts = await getAllAccount(db);
-    if (accounts?.length > 0) {
-      setAllAccount(accounts);
-      const currentAccount = accounts[0];
-      setCurrentAccount(currentAccount);
-      if (!currentAccount.lastSyncAt) {
-        await fetchStars(currentAccount.login);
-        refreshAllAccount();
-      } else {
+    if (currentAccount) {
+      if (currentAccount.lastSyncAt) {
         await getStarFromIndexDB(currentAccount.login);
+      } else {
+        await fetchStars(currentAccount.login);
+        await refreshAllAccount();
       }
     } else {
       router.replace("/login");
@@ -46,7 +40,7 @@ export default function RepoList() {
     return <Loading></Loading>;
   } else {
     return (
-      <div className="sm:w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[94rem] m-auto">
+      <div className="w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[94rem] m-auto py-20">
         <div className="flex flex-wrap gap-5">
           {stars.map((star) => {
             return (
@@ -72,7 +66,8 @@ export default function RepoList() {
                         </div>
                       </Link>
                       <Link
-                        href={`https://github.com${star.owner}/${star.repo}`}
+                        href={`https://github.com/${star.owner}/${star.repo}`}
+                        target="_blank"
                       >
                         <div
                           className={`text-base font-semibold ${styles["repo-name"]}`}
@@ -121,6 +116,7 @@ export default function RepoList() {
                         </Link>
                       ) : null}
                     </div>
+                    {dayjs(star.starAt * 1000).format("YYYY-MM-DD")}
                   </div>
                 </div>
               </FadeInWhenVisible>

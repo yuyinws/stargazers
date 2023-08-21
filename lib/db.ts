@@ -16,7 +16,7 @@ export interface Star {
   languageColor: string
   stargazerCount: string
   pushedAt: string
-  starAt: string
+  starAt: number
 }
 
 export interface Account {
@@ -25,6 +25,15 @@ export interface Account {
   name: string
   from: 'github' | 'search'
   lastSyncAt: string
+  addedAt: string
+}
+
+export interface QueryForm {
+  page: number,
+  size: number
+  startTime: number,
+  endTime: number
+  repo: string
 }
 
 interface DB extends DBSchema {
@@ -70,9 +79,14 @@ export async function initDb() {
 }
 
 export async function addStar(db: IDBPDatabase<DB>, star: Star) {
-  const tx = db.transaction('stars', 'readwrite');
-  await tx.store.add(star);
-  await tx.done;
+  try {
+    const tx = db?.transaction('stars', 'readwrite');
+    await tx?.store?.add(star);
+    await tx?.done;
+  } catch (error) {
+    console.log(error)
+  }
+
 }
 
 export async function searchByRepo(db: IDBPDatabase<DB>, repo: string) {
@@ -83,13 +97,22 @@ export async function searchByStarAt(db: IDBPDatabase<DB>, start: string, end: s
   return db.getAllFromIndex('stars', 'by_starAt', IDBKeyRange.bound(start, end));
 }
 
-export async function searchStarByLogin(db: IDBPDatabase<DB>, login: string) {
-  const stars = await db.getAllFromIndex('stars', 'by_login', login);
-  stars.sort((a, b) => {
-    return Date.parse(b.starAt) - Date.parse(a.starAt)
-  })
+export async function searchStar(db: IDBPDatabase<DB>, login: string, queryForm: QueryForm) {
+  const { startTime, endTime, page, size, repo } = queryForm
 
-  return stars
+  const stars = await db.getAllFromIndex('stars', 'by_starAt', IDBKeyRange.bound(startTime, endTime));
+
+  stars.reverse()
+
+  const results = stars
+    .filter((star) => star.login === login)
+    .filter(star => star.repo.toLowerCase().includes(repo.toLowerCase()) || !repo)
+
+  return {
+    stars: results.slice((page - 1) * size, page * size),
+    total: results.length
+  }
+  
 }
 
 export async function addAccount(db: IDBPDatabase<DB>, account: Account) {
@@ -104,19 +127,9 @@ export async function getAllAccount(db: IDBPDatabase<DB>) {
   const store = transaction.objectStore('accounts')
   const accounts = await store.getAll()
 
+  accounts.sort((a, b) => {
+    return Date.parse(a.addedAt) - Date.parse(b.addedAt)
+  })
+
   return accounts
-}
-
-export async function deleteAccount(db: IDBPDatabase<DB>,login: string) {
-  try {
-    await db.delete('accounts', login)
-    const stars = await db.getAllFromIndex('stars', 'by_login', login)
-
-    for (const star of stars) {
-      await db.delete('stars', star.id)
-    }
-
-  } catch (error) {
-    console.log(error)
-  }
 }
