@@ -24,12 +24,13 @@ import { useRouter } from "next/navigation";
 import { Star, initDb, addStar } from "@/lib/db";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useStarStore } from "@/store/star";
 
 export default function Settings() {
   const accountStore = useStore(useAccountStore, (state) => state);
+  const starStore = useStore(useStarStore, (state) => state);
   const route = useRouter();
 
-  const [syncLoading, setSyncLoading] = useState(false);
   const [currentSyncIndex, setCurrentSyncIndex] = useState(0);
 
   useEffect(() => {
@@ -50,39 +51,17 @@ export default function Settings() {
 
   async function handleSync(login: string, index: number) {
     try {
-      setSyncLoading(true);
       setCurrentSyncIndex(index);
-      const db = await initDb();
 
-      const response = await fetch(`/api/gh/stars?username=${login}`);
-      const data = await response.json();
-
-      const addTransactions: any[] = data.data.map((star: Star) => {
-        return addStar(db, star);
-      });
-
-      addTransactions
-        .reduce((prev, cur) => prev.then(cur), Promise.resolve())
-        .catch((err: any) => console.log(err));
-
-      const transaction = db.transaction("accounts", "readwrite");
-      const store = transaction.objectStore("accounts");
-      const account = (await store.get(login))!;
-      const updateData: Account = {
-        ...account,
-        lastSyncAt: Date.now().toString(),
-      };
-
-      await store.put(updateData);
-
+      await starStore?.fetchStars(login);
       await accountStore?.refreshAllAccount();
       toast.success("Account synced");
     } catch (error) {
+      console.log(error);
       toast.error("Error syncing account", {
         description: String(error),
       });
     } finally {
-      setSyncLoading(false);
     }
   }
 
@@ -97,7 +76,10 @@ export default function Settings() {
         {accountStore?.allAccount?.length ? (
           <div className="flex flex-col gap-3">
             {accountStore?.allAccount?.map((account, index) => (
-              <div className="flex justify-between" key={account.login}>
+              <div
+                className="flex gap-2 flex-col xl:items-start xl:flex-row justify-between"
+                key={account.login}
+              >
                 <div className="flex items-center gap-2">
                   <Avatar className={cn("h-[2rem] w-[2rem]")}>
                     <AvatarImage src={account.avatarUrl} />
@@ -118,12 +100,12 @@ export default function Settings() {
 
                 <div className="flex gap-2 items-center">
                   <Button
-                    disabled={syncLoading}
+                    disabled={starStore?.loading}
                     onClick={() => handleSync(account.login, index)}
                     size="sm"
                     variant="outline"
                   >
-                    {syncLoading && index === currentSyncIndex ? (
+                    {starStore?.loading && index === currentSyncIndex ? (
                       <>
                         <Loader2Icon className="h-[1rem] w-[1rem] mr-2 animate-spin"></Loader2Icon>
                         Syncing ...

@@ -13,9 +13,9 @@ interface StarStore {
 }
 
 export interface QueryForm {
-  page: number,
+  page: number
   size: number
-  startTime: number,
+  startTime: number
   endTime: number
   repo: string
   keyword: string
@@ -66,14 +66,37 @@ export const useStarStore = create<StarStore>((set, get) => {
 
         const db = await initDb()
 
-        const response = await fetch(`/api/gh/stars?username=${username}`);
-        const data = await response.json();
+        const addTransactions: any[] = []
 
-        const addTransactions: any[] = data.data.map((star: Star) => {
-          return addStar(db, star)
-        })
+        const fetchByCursor = async (cursor: string) => {
+          const response = await fetch(`/api/gh/stars?username=${username}&cursor=${cursor}`);
+          const data = await response.json();
 
-        addTransactions.reduce((prev, cur) => prev.then(cur), Promise.resolve())
+          if (data.errors) {
+            throw new Error(data.errors);
+          }
+
+          const stars = data.data.stars
+          const pageInfo = data.data.pageInfo
+  
+          const transactions: any[] = stars.map((star: Star) => {
+            return star
+          })
+
+          addTransactions.push(...transactions)
+
+          if (pageInfo.hasNextPage) {
+            await fetchByCursor(pageInfo.endCursor)
+          }
+        }
+
+        await fetchByCursor('')
+
+        addTransactions.reduce((prev, cur) => {
+          return prev.then(() => {
+            return addStar(db, cur)
+          })
+        }, Promise.resolve())
 
         const transaction = db.transaction('accounts', 'readwrite')
         const store = transaction.objectStore('accounts')
@@ -86,10 +109,6 @@ export const useStarStore = create<StarStore>((set, get) => {
         await store.put(updateData)
 
         const results = await searchStar(db, username, get().queryForm)
-
-        console.log({
-          results
-        })
 
         set(() => ({
           stars: results.stars

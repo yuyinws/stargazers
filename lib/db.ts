@@ -77,7 +77,7 @@ export async function addStar(db: IDBPDatabase<DB>, star: Star) {
     await tx?.store?.add(star);
     await tx?.done;
   } catch (error) {
-    console.log(error)
+    // console.log(error)
   }
 
 }
