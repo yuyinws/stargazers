@@ -34,7 +34,7 @@ export default function RepoList() {
 
   useEffect(() => {
     getAccount();
-  });
+  }, []);
 
   if (loading) {
     return <Loading></Loading>;

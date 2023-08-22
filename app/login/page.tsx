@@ -50,7 +50,7 @@ export default function Login() {
 
   useEffect(() => {
     getAccount();
-  });
+  }, []);
 
   return (
     <div className="w-full h-screen  flex justify-center">
