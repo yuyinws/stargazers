@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import dayjs from 'dayjs'
+export const dynamic = 'force-dynamic'
 
 const query = `#graphql
 query GetStarredRepositories($username: String!, $cursor: String) {
@@ -41,7 +42,6 @@ query GetStarredRepositories($username: String!, $cursor: String) {
 }
 `;
 
-export const runtime = 'edge'
 
 export async function GET(request: Request) {
   try {
