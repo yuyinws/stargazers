@@ -73,13 +73,15 @@ export async function initDb() {
 
 export async function addStar(db: IDBPDatabase<DB>, star: Star) {
   try {
+    const isExist = await db.getKey('stars', star.id)
+    if (isExist)
+      return
     const tx = db?.transaction('stars', 'readwrite');
     await tx?.store?.add(star);
     await tx?.done;
   } catch (error) {
-    // console.log(error)
+    console.log(error)
   }
-
 }
 
 export async function searchByRepo(db: IDBPDatabase<DB>, repo: string) {

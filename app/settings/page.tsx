@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Star, initDb, addStar } from "@/lib/db";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStarStore } from "@/store/star";
@@ -76,10 +75,7 @@ export default function Settings() {
         {accountStore?.allAccount?.length ? (
           <div className="flex flex-col gap-3">
             {accountStore?.allAccount?.map((account, index) => (
-              <div
-                className="flex gap-2 flex-col xl:items-start xl:flex-row justify-between"
-                key={account.login}
-              >
+              <div className="flex gap-2 justify-between" key={account.login}>
                 <div className="flex items-center gap-2">
                   <Avatar className={cn("h-[2rem] w-[2rem]")}>
                     <AvatarImage src={account.avatarUrl} />
@@ -107,21 +103,33 @@ export default function Settings() {
                   >
                     {starStore?.loading && index === currentSyncIndex ? (
                       <>
-                        <Loader2Icon className="h-[1rem] w-[1rem] mr-2 animate-spin"></Loader2Icon>
-                        Syncing ...
+                        <Loader2Icon className="h-[1rem] w-[1rem] animate-spin"></Loader2Icon>
+                        <span
+                          className={["ml-1", "hidden", "xl:inline"].join(" ")}
+                        >
+                          Syncing ...
+                        </span>
                       </>
                     ) : (
                       <>
-                        <RefreshCcwIcon className="h-[1rem] w-[1rem] mr-2"></RefreshCcwIcon>
-                        Sync
+                        <RefreshCcwIcon className="h-[1rem] w-[1rem]"></RefreshCcwIcon>
+                        <span
+                          className={["ml-1", "hidden", "xl:inline"].join(" ")}
+                        >
+                          Sync
+                        </span>
                       </>
                     )}
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button size="sm" variant="destructive">
-                        <Trash2Icon className="h-[1rem] w-[1rem] mr-1"></Trash2Icon>
-                        Delete
+                        <Trash2Icon className="h-[1rem] w-[1rem]"></Trash2Icon>
+                        <span
+                          className={["ml-1", "hidden", "xl:inline"].join(" ")}
+                        >
+                          Delete
+                        </span>
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
