@@ -43,9 +43,6 @@ export const useStarStore = create<StarStore>((set, get) => {
         }))
         const db = await initDb()
         const results = await searchStar(db, username, get().queryForm)
-        console.log({
-          results
-        })
         set(() => ({
           stars: results.stars,
         }))
@@ -92,11 +89,13 @@ export const useStarStore = create<StarStore>((set, get) => {
 
         await fetchByCursor('')
 
-        addTransactions.reduce((prev, cur) => {
+        const additionPromise = addTransactions.reduce((prev, cur) => {
           return prev.then(() => {
             return addStar(db, cur)
           })
         }, Promise.resolve())
+
+        await additionPromise
 
         const transaction = db.transaction('accounts', 'readwrite')
         const store = transaction.objectStore('accounts')
@@ -109,6 +108,8 @@ export const useStarStore = create<StarStore>((set, get) => {
         await store.put(updateData)
 
         const results = await searchStar(db, username, get().queryForm)
+
+        console.log('xxxxxxxx')
 
         set(() => ({
           stars: results.stars

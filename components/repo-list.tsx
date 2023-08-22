@@ -115,7 +115,6 @@ export default function RepoList() {
                       </Link>
                     ) : null}
                   </div>
-                  {dayjs(star.starAt * 1000).format("YYYY-MM-DD")}
                 </div>
               </div>
             </FadeInWhenVisible>

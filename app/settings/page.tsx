@@ -31,13 +31,17 @@ export default function Settings() {
   const route = useRouter();
 
   const [currentSyncIndex, setCurrentSyncIndex] = useState(0);
+  const [currentDeleteIndex, setCurrentDeleteIndex] = useState(0);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (accountStore?.allAccount?.length === 0) route.replace("/login");
   });
 
-  async function handleDeleteAccount(account: Account) {
+  async function handleDeleteAccount(account: Account, index: number) {
     try {
+      setDeleteLoading(true);
+      setCurrentDeleteIndex(index);
       await accountStore?.deleteAccount(account);
       toast.success("Account deleted");
       if (accountStore?.allAccount?.length === 1) route.replace("/login");
@@ -45,6 +49,8 @@ export default function Settings() {
       toast.error("Error deleting account", {
         description: String(error),
       });
+    } finally {
+      setDeleteLoading(false);
     }
   }
 
@@ -53,6 +59,8 @@ export default function Settings() {
       setCurrentSyncIndex(index);
 
       await starStore?.fetchStars(login);
+
+      console.log("yyyyyy");
       await accountStore?.refreshAllAccount();
       toast.success("Account synced");
     } catch (error) {
@@ -96,7 +104,7 @@ export default function Settings() {
 
                 <div className="flex gap-2 items-center">
                   <Button
-                    disabled={starStore?.loading}
+                    disabled={starStore?.loading || deleteLoading}
                     onClick={() => handleSync(account.login, index)}
                     size="sm"
                     variant="outline"
@@ -123,13 +131,34 @@ export default function Settings() {
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button size="sm" variant="destructive">
-                        <Trash2Icon className="h-[1rem] w-[1rem]"></Trash2Icon>
-                        <span
-                          className={["ml-1", "hidden", "xl:inline"].join(" ")}
-                        >
-                          Delete
-                        </span>
+                      <Button
+                        disabled={starStore?.loading || deleteLoading}
+                        size="sm"
+                        variant="destructive"
+                      >
+                        {deleteLoading && currentDeleteIndex === index ? (
+                          <>
+                            <Loader2Icon className="h-[1rem] w-[1rem] animate-spin"></Loader2Icon>
+                            <span
+                              className={["ml-1", "hidden", "xl:inline"].join(
+                                " "
+                              )}
+                            >
+                              Deleting ...
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <Trash2Icon className="h-[1rem] w-[1rem]"></Trash2Icon>
+                            <span
+                              className={["ml-1", "hidden", "xl:inline"].join(
+                                " "
+                              )}
+                            >
+                              Delete
+                            </span>
+                          </>
+                        )}
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -145,7 +174,7 @@ export default function Settings() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={() => handleDeleteAccount(account)}
+                          onClick={() => handleDeleteAccount(account, index)}
                         >
                           Continue
                         </AlertDialogAction>
