@@ -60,7 +60,6 @@ export default function Settings() {
 
       await starStore?.fetchStars(login);
 
-      console.log("yyyyyy");
       await accountStore?.refreshAllAccount();
       toast.success("Account synced");
     } catch (error) {

@@ -11,7 +11,6 @@ import Link from "next/link";
 import { useAccountStore } from "@/store/account";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import dayjs from "dayjs";
 
 export default function RepoList() {
   const { getStarFromIndexDB, stars, loading, fetchStars } = useStarStore(

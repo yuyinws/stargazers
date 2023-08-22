@@ -3,7 +3,7 @@
 import DatePicker from "./date-picker";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { subMonths } from "date-fns";
+import { subMonths, getUnixTime } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { Input } from "@/components/ui/input";
 import { useStore } from "@/store/useStore";
@@ -27,16 +27,24 @@ export default function Search() {
       starStore.getStarFromIndexDB(accountStore.currentAccount?.login);
   }
 
-  return (
+  return starStore ? (
     <div className="flex flex-wrap gap-3">
       <DatePicker
         dateRange={dateRange}
-        setDateRange={setDateRange}
+        setDateRange={(event: DateRange) => {
+          setDateRange(event);
+          starStore.pagination.page = 1;
+          starStore.setQueryForm({
+            startTime: getUnixTime(event.from!),
+            endTime: getUnixTime(event.to!),
+          });
+        }}
       ></DatePicker>
       <Input
         value={keyword}
         onChange={(e) => {
           setKeyword(e.target.value);
+          starStore.pagination.page = 1;
           starStore.setQueryForm({
             keyword: e.target.value,
           });
@@ -48,6 +56,7 @@ export default function Search() {
         value={language}
         onChange={(e) => {
           setLanguage(e.target.value);
+          starStore.pagination.page = 1;
           starStore.setQueryForm({
             language: e.target.value,
           });
@@ -57,5 +66,7 @@ export default function Search() {
       ></Input>
       <Button onClick={handleSearch}>Search</Button>
     </div>
+  ) : (
+    ""
   );
 }

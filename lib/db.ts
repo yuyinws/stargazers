@@ -92,7 +92,7 @@ export async function searchByStarAt(db: IDBPDatabase<DB>, start: string, end: s
   return db.getAllFromIndex('stars', 'by_starAt', IDBKeyRange.bound(start, end));
 }
 
-export async function searchStar(db: IDBPDatabase<DB>, login: string, queryForm: QueryForm) {
+export async function searchStar(db: IDBPDatabase<DB>, login: string, queryForm: QueryForm & { page: number, size: number }) {
   const { startTime, endTime, page, size, keyword,language } = queryForm
   let lowerKeyword = keyword?.toLowerCase()
   let lowerLanguage = language?.toLowerCase()

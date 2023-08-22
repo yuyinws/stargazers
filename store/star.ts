@@ -2,19 +2,7 @@ import { Account } from '@/lib/db';
 import { create } from 'zustand'
 import { Star, initDb, searchStar, addStar } from '@/lib/db'
 
-interface StarStore {
-  stars: Star[]
-  loading: boolean
-  queryForm: QueryForm,
-
-  fetchStars: (username: string) => Promise<void>
-  getStarFromIndexDB: (username: string) => Promise<void>
-  setQueryForm: (queryForm: Partial<QueryForm>) => void
-}
-
 export interface QueryForm {
-  page: number
-  size: number
   startTime: number
   endTime: number
   repo: string
@@ -22,18 +10,41 @@ export interface QueryForm {
   language: string
 }
 
+export interface Pagination {
+  page: number
+  size: number
+  total: number
+}
+
+interface StarStore {
+  stars: Star[]
+  loading: boolean
+  queryForm: QueryForm,
+  pagination: Pagination
+
+  fetchStars: (username: string) => Promise<void>
+  getStarFromIndexDB: (username: string) => Promise<void>
+  setQueryForm: (queryForm: Partial<QueryForm>) => void
+  setPagintion: (pagination: Partial<Pagination>) => void
+}
+
+
+
 export const useStarStore = create<StarStore>((set, get) => {
   return {
     stars: [],
     loading: false,
     queryForm: {
-      page: 1,
-      size: 12,
       startTime: -Infinity,
       endTime: Infinity,
       repo: '',
       keyword: '',
       language: '',
+    },
+    pagination: {
+      page: 1,
+      size: 12,
+      total: 0
     },
 
     getStarFromIndexDB: async (username: string) => {
@@ -41,10 +52,19 @@ export const useStarStore = create<StarStore>((set, get) => {
         set(() => ({
           loading: true
         }))
+
         const db = await initDb()
-        const results = await searchStar(db, username, get().queryForm)
+        const results = await searchStar(db, username, {
+          ...get().queryForm,
+          page: get().pagination.page,
+          size: get().pagination.size
+        })
         set(() => ({
           stars: results.stars,
+          pagination: {
+            ...get().pagination,
+            total: results.total
+          }
         }))
       } catch (error) {
         console.log(error)
@@ -107,12 +127,18 @@ export const useStarStore = create<StarStore>((set, get) => {
 
         await store.put(updateData)
 
-        const results = await searchStar(db, username, get().queryForm)
-
-        console.log('xxxxxxxx')
+        const results = await searchStar(db, username, {
+          ...get().queryForm,
+          page: get().pagination.page,
+          size: get().pagination.size
+        })
 
         set(() => ({
-          stars: results.stars
+          stars: results.stars,
+          pagination: {
+            ...get().pagination,
+            total: results.total
+          }
         }))
       } catch (error) {
         console.log(error)
@@ -128,6 +154,15 @@ export const useStarStore = create<StarStore>((set, get) => {
         queryForm: {
           ...get().queryForm,
           ...form
+        }
+      }))
+    },
+
+    setPagintion: (pagination: Partial<Pagination>) => {
+      set(() => ({
+        pagination: {
+          ...get().pagination,
+          ...pagination,
         }
       }))
     }
