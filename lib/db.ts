@@ -1,3 +1,4 @@
+import { QueryForm } from '@/store/star'
 import { openDB, DBSchema, IDBPDatabase } from 'idb'
 
 export interface Star {
@@ -26,14 +27,6 @@ export interface Account {
   from: 'github' | 'search'
   lastSyncAt: string
   addedAt: string
-}
-
-export interface QueryForm {
-  page: number,
-  size: number
-  startTime: number,
-  endTime: number
-  repo: string
 }
 
 interface DB extends DBSchema {
@@ -98,21 +91,29 @@ export async function searchByStarAt(db: IDBPDatabase<DB>, start: string, end: s
 }
 
 export async function searchStar(db: IDBPDatabase<DB>, login: string, queryForm: QueryForm) {
-  const { startTime, endTime, page, size, repo } = queryForm
-
+  const { startTime, endTime, page, size, keyword,language } = queryForm
+  let lowerKeyword = keyword?.toLowerCase()
+  let lowerLanguage = language?.toLowerCase()
   const stars = await db.getAllFromIndex('stars', 'by_starAt', IDBKeyRange.bound(startTime, endTime));
 
   stars.reverse()
 
   const results = stars
     .filter((star) => star.login === login)
-    .filter(star => star.repo.toLowerCase().includes(repo.toLowerCase()) || !repo)
+    .filter(star => {
+      return !keyword
+        || star.repo?.toLowerCase().includes(lowerKeyword)
+        || star.description?.toLowerCase().includes(lowerKeyword)
+        || star.owner?.toLowerCase().includes(lowerKeyword)
+    }).filter(star => {
+      return star.language?.toLowerCase().includes(lowerLanguage)
+    })
 
   return {
     stars: results.slice((page - 1) * size, page * size),
     total: results.length
   }
-  
+
 }
 
 export async function addAccount(db: IDBPDatabase<DB>, account: Account) {

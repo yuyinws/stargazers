@@ -5,15 +5,36 @@ import { Star, initDb, searchStar, addStar } from '@/lib/db'
 interface StarStore {
   stars: Star[]
   loading: boolean
+  queryForm: QueryForm,
 
   fetchStars: (username: string) => Promise<void>
   getStarFromIndexDB: (username: string) => Promise<void>
+  setQueryForm: (queryForm: Partial<QueryForm>) => void
+}
+
+export interface QueryForm {
+  page: number,
+  size: number
+  startTime: number,
+  endTime: number
+  repo: string
+  keyword: string
+  language: string
 }
 
 export const useStarStore = create<StarStore>((set, get) => {
   return {
     stars: [],
     loading: false,
+    queryForm: {
+      page: 1,
+      size: 12,
+      startTime: -Infinity,
+      endTime: Infinity,
+      repo: '',
+      keyword: '',
+      language: '',
+    },
 
     getStarFromIndexDB: async (username: string) => {
       try {
@@ -21,16 +42,10 @@ export const useStarStore = create<StarStore>((set, get) => {
           loading: true
         }))
         const db = await initDb()
-        const results = await searchStar(db, username, {
-          startTime: 1656636909,
-          endTime: 1690851309,
-          page: 1,
-          size: 10,
-          repo: ''
+        const results = await searchStar(db, username, get().queryForm)
+        console.log({
+          results
         })
-
-        console.log(results)
-
         set(() => ({
           stars: results.stars,
         }))
@@ -58,11 +73,7 @@ export const useStarStore = create<StarStore>((set, get) => {
           return addStar(db, star)
         })
 
-        // await Promise.allSettled(addTransactions)
-
         addTransactions.reduce((prev, cur) => prev.then(cur), Promise.resolve())
-
-        // addTransactions.reduce((prev, cur) => prev.then(cur).catch(), Promise.resolve()).catch((err: any) => console.log(err))
 
         const transaction = db.transaction('accounts', 'readwrite')
         const store = transaction.objectStore('accounts')
@@ -74,8 +85,14 @@ export const useStarStore = create<StarStore>((set, get) => {
 
         await store.put(updateData)
 
+        const results = await searchStar(db, username, get().queryForm)
+
+        console.log({
+          results
+        })
+
         set(() => ({
-          stars: data.data as Star[],
+          stars: results.stars
         }))
       } catch (error) {
         console.log(error)
@@ -84,6 +101,15 @@ export const useStarStore = create<StarStore>((set, get) => {
           loading: false
         }))
       }
+    },
+
+    setQueryForm: (form: Partial<QueryForm>) => {
+      set(() => ({
+        queryForm: {
+          ...get().queryForm,
+          ...form
+        }
+      }))
     }
   }
 })

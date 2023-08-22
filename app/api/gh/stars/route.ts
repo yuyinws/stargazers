@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 const query = `#graphql
 query GetStarredRepositories($username: String!, $cursor: String) {
   user(login: $username) {
-    starredRepositories(first: 50, after: $cursor, orderBy: {direction: DESC, field: STARRED_AT}) {
+    starredRepositories(first: 100, after: $cursor, orderBy: {direction: DESC, field: STARRED_AT}) {
       pageInfo {
         hasNextPage
         endCursor
@@ -41,6 +41,8 @@ query GetStarredRepositories($username: String!, $cursor: String) {
 }
 `;
 
+export const runtime = 'edge'
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -48,51 +50,69 @@ export async function GET(request: Request) {
     if (!username) {
       return NextResponse.json({ errors: 'username is required' }, { status: 500 })
     }
-    const res = await fetch('https://api.github.com/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`
-      },
-      body: JSON.stringify({
-        query,
-        variables: {
-          username,
+
+    const stars:any[] = []
+    let fetchCounter = 0
+
+    const getStars = async(cursor: string): Promise<void | NextResponse> => {
+      const res = await fetch('https://api.github.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`
         },
+        body: JSON.stringify({
+          query,
+          variables: {
+            username,
+            cursor
+          },
+        })
       })
-    })
+  
+      const data = await res.json()
 
-    const data = await res.json()
+      if (data?.errors) {
+        return NextResponse.json({ errors: data.errors }, { status: 500 })
+      }
 
-    if (data?.errors) {
-      return NextResponse.json({ errors: data.errors }, { status: 500 })
+      const formatedData = data?.data?.user?.starredRepositories?.edges.map((edge: any) => {
+        return {
+          id: username + edge.node.owner?.login + edge.node.name,
+          login: username,
+          repo: edge.node?.name,
+          forkCount: edge.node?.forkCount,
+          description: edge.node?.description,
+          homepageUrl: edge.node?.homepageUrl,
+          isArchived: edge.node?.isArchived,
+          isTemplate: edge.node?.isTemplate,
+          license: edge.node.licenseInfo?.name,
+          owner: edge.node.owner?.login,
+          ownerAvatarUrl: edge.node.owner.avatarUrl,
+          language: edge.node.primaryLanguage?.name,
+          languageColor: edge.node.primaryLanguage?.color,
+          stargazerCount: edge.node?.stargazerCount,
+          pushedAt: edge.node?.pushedAt,
+          starAt: dayjs(edge?.starredAt).unix()
+        }
+      })
+
+      stars.push(...formatedData)
+
+      const pageInfo = data?.data?.user?.starredRepositories?.pageInfo
+
+      if (pageInfo?.hasNextPage && fetchCounter < 50) {
+        fetchCounter++
+        await getStars(pageInfo.endCursor)
+      }
     }
 
-    const formatedData = data?.data?.user?.starredRepositories?.edges.map((edge: any) => {
-      return {
-        id: username + edge.node.owner?.login + edge.node.name,
-        login: username,
-        repo: edge.node?.name,
-        forkCount: edge.node?.forkCount,
-        description: edge.node?.description,
-        homepageUrl: edge.node?.homepageUrl,
-        isArchived: edge.node?.isArchived,
-        isTemplate: edge.node?.isTemplate,
-        license: edge.node.licenseInfo?.name,
-        owner: edge.node.owner?.login,
-        ownerAvatarUrl: edge.node.owner.avatarUrl,
-        language: edge.node.primaryLanguage?.name,
-        languageColor: edge.node.primaryLanguage?.color,
-        stargazerCount: edge.node?.stargazerCount,
-        pushedAt: edge.node?.pushedAt,
-        starAt: dayjs(edge?.starredAt).unix()
-      }
-    })
+    await getStars('')
 
     return NextResponse.json({
       state: 'success',
-      data: formatedData,
+      data: stars,
     })
   } catch (error) {
     console.log(error)
