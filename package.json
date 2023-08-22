@@ -35,7 +35,7 @@
     "idb": "^7.1.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.268.0",
-    "next": "13.4.14-canary.2",
+    "next": "13.4.19",
     "next-themes": "^0.2.1",
     "postcss": "8.4.27",
     "react": "18.2.0",
