@@ -77,8 +77,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-:fource {
-  outline: 0;
-}
-

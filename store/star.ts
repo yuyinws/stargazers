@@ -1,11 +1,12 @@
 import { Account } from '@/lib/db';
 import { create } from 'zustand'
 import { Star, initDb, searchStar, addStar } from '@/lib/db'
+import { subMonths, getUnixTime } from "date-fns";
+import { cloneDeep } from 'lodash'
 
 export interface QueryForm {
-  startTime: number
-  endTime: number
-  repo: string
+  startTime: Date | number
+  endTime: Date | number
   keyword: string
   language: string
 }
@@ -19,12 +20,14 @@ export interface Pagination {
 interface StarStore {
   stars: Star[]
   loading: boolean
-  queryForm: QueryForm,
+  queryForm: QueryForm
+  searchQueryForm: QueryForm
   pagination: Pagination
 
   fetchStars: (username: string) => Promise<void>
   getStarFromIndexDB: (username: string) => Promise<void>
   setQueryForm: (queryForm: Partial<QueryForm>) => void
+  syncSearchQueryForm: () => void
   setPagintion: (pagination: Partial<Pagination>) => void
 }
 
@@ -35,9 +38,14 @@ export const useStarStore = create<StarStore>((set, get) => {
     stars: [],
     loading: false,
     queryForm: {
-      startTime: -Infinity,
-      endTime: Infinity,
-      repo: '',
+      startTime: subMonths(new Date(), 12),
+      endTime: new Date(),
+      keyword: '',
+      language: '',
+    },
+    searchQueryForm: {
+      startTime: subMonths(new Date(), 12),
+      endTime: new Date(),
       keyword: '',
       language: '',
     },
@@ -54,8 +62,13 @@ export const useStarStore = create<StarStore>((set, get) => {
         }))
 
         const db = await initDb()
+
+        const searchQueryForm = cloneDeep(get().searchQueryForm)
+        searchQueryForm.startTime = searchQueryForm.startTime ? getUnixTime(searchQueryForm.startTime) : -Infinity
+        searchQueryForm.endTime = searchQueryForm.endTime ? getUnixTime(searchQueryForm.endTime) : Infinity
+
         const results = await searchStar(db, username, {
-          ...get().queryForm,
+          ...searchQueryForm,
           page: get().pagination.page,
           size: get().pagination.size
         })
@@ -158,6 +171,14 @@ export const useStarStore = create<StarStore>((set, get) => {
       }))
     },
 
+    syncSearchQueryForm: () => {
+      set(() => ({
+        searchQueryForm: {
+          ...get().queryForm,
+        }
+      }))
+    },
+
     setPagintion: (pagination: Partial<Pagination>) => {
       set(() => ({
         pagination: {
@@ -165,6 +186,6 @@ export const useStarStore = create<StarStore>((set, get) => {
           ...pagination,
         }
       }))
-    }
+    },
   }
 })

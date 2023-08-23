@@ -14,7 +14,7 @@ query GetStarredRepositories($username: String!, $cursor: String) {
         node {
           name
           nameWithOwner
-          pushedAt
+          updatedAt
           owner {
               avatarUrl
               login
@@ -88,6 +88,7 @@ export async function GET(request: Request) {
         languageColor: edge.node.primaryLanguage?.color,
         stargazerCount: edge.node?.stargazerCount,
         pushedAt: edge.node?.pushedAt,
+        updatedAt: edge.node?.updatedAt,
         starAt: dayjs(edge?.starredAt).unix()
       }
     })

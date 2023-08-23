@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/layout/header";
 import { Providers } from "./providers";
+import Footer from "@/components/layout/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,11 +20,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} `}>
         <Providers>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Header></Header>
-            <main>{children}</main>
+            <div className="flex flex-col min-h-screen">
+              <Header></Header>
+              <main className="flex-1">{children}</main>
+              <Footer></Footer>
+            </div>
           </ThemeProvider>
         </Providers>
       </body>

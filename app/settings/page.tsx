@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2Icon, RefreshCcwIcon, Loader2Icon } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { Account } from "@/lib/db";
 import {
   AlertDialog,
@@ -25,6 +26,7 @@ import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStarStore } from "@/store/star";
 
+dayjs.extend(relativeTime);
 export default function Settings() {
   const accountStore = useStore(useAccountStore, (state) => state);
   const starStore = useStore(useStarStore, (state) => state);
@@ -94,9 +96,9 @@ export default function Settings() {
                     <span className="text-sm font-medium">{account.name}</span>
                     <span className="text-xs text-muted-foreground">
                       {account.lastSyncAt
-                        ? dayjs(Number(account.lastSyncAt)).format("YYYY-MM-DD")
+                        ? "Synced on " +
+                          dayjs(Number(account.lastSyncAt)).fromNow()
                         : "Never"}
-                      {index === 0 && " (last synced) "}
                     </span>
                   </div>
                 </div>

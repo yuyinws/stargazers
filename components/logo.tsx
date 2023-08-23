@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 function logo() {
-  return <div>Stargazers</div>;
+  return <div className="cursor-default">Stargazers</div>;
 }
 
 export default function Logo() {

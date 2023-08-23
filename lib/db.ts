@@ -16,7 +16,7 @@ export interface Star {
   language: string
   languageColor: string
   stargazerCount: string
-  pushedAt: string
+  updatedAt: string
   starAt: number
 }
 

@@ -25,12 +25,14 @@ import { useAccountStore } from "@/store/account";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { subMonths } from "date-fns";
 
 export default function Account() {
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const { getStarFromIndexDB, fetchStars } = useStarStore();
+  const { getStarFromIndexDB, fetchStars, setQueryForm, syncSearchQueryForm } =
+    useStarStore();
   const { currentAccount, setCurrentAccount, allAccount, refreshAllAccount } =
     useAccountStore();
 
@@ -57,6 +59,15 @@ export default function Account() {
                 if (currentAccount?.login === account.login) return;
                 setCurrentAccount(account);
                 setOpen(false);
+                setQueryForm({
+                  startTime: subMonths(new Date(), 12),
+                  endTime: new Date(),
+                  keyword: "",
+                  language: "",
+                });
+
+                syncSearchQueryForm();
+
                 if (!account.lastSyncAt) {
                   await fetchStars(account.login);
                   await refreshAllAccount();
