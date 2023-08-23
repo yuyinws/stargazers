@@ -10,7 +10,7 @@ export default function Header() {
 
   return (
     <header
-      className={`flex items-center justify-between sticky top-0 py-1 px-3 border-b-[1px] border-zinc-200 ${styles.header}`}
+      className={`flex items-center justify-between sticky top-0 py-1 px-3 ${styles.header}`}
     >
       <Logo></Logo>
       <div className="flex items-center">
