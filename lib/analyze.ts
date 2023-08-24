@@ -1,6 +1,7 @@
 import { QueryForm } from '@/store/star';
 import { initDb, searchStar } from './db'
 import { getUnixTime } from 'date-fns';
+import { cloneDeep } from 'lodash'
 
 export interface Language {
   name: string
@@ -20,11 +21,12 @@ function replace(str: string) {
 
 export async function analyze(login: string, searchQueryForm: QueryForm) {
   const db = await initDb()
-  searchQueryForm.startTime = searchQueryForm.startTime ? getUnixTime(searchQueryForm.startTime) : -Infinity
-  searchQueryForm.endTime = searchQueryForm.endTime ? getUnixTime(searchQueryForm.endTime) : Infinity
+  const _searchQueryForm = cloneDeep(searchQueryForm)
+  _searchQueryForm.startTime = _searchQueryForm.startTime ? getUnixTime(_searchQueryForm.startTime) : -Infinity
+  _searchQueryForm.endTime = _searchQueryForm.endTime ? getUnixTime(_searchQueryForm.endTime) : Infinity
 
   const results = await searchStar(db, login, {
-    ...searchQueryForm,
+    ..._searchQueryForm,
     page: 1,
     size: 0
   })
@@ -63,11 +65,6 @@ export async function analyze(login: string, searchQueryForm: QueryForm) {
 
   languages.sort((a, b) => {
     return b.count - a.count
-  })
-
-  console.log({
-    owners: owners.slice(0, 5),
-    languages: languages.slice(0, 5)
   })
 
   return {
