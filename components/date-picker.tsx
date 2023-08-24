@@ -26,7 +26,7 @@ export default function DatePicker({
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[20rem] xl:w-[15rem] 2xl:w-[20rem] justify-start text-left font-normal",
+              "w-[20rem] xl:w-[15rem] 2xl:w-[15rem] justify-start text-left font-normal",
               !dateRange && "text-muted-foreground"
             )}
           >

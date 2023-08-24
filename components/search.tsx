@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
 import { useState } from "react";
+import Analyze from "@/components/analyze";
 
 export default function Search() {
   const starStore = useStore(useStarStore, (state) => state)!;
@@ -96,7 +97,7 @@ export default function Search() {
           }}
           value={picker}
         >
-          <SelectTrigger className="w-[20rem] xl:w-[15rem]">
+          <SelectTrigger className="w-[20rem] xl:w-[10rem]">
             <SelectValue placeholder="Pick a date range"></SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -150,6 +151,7 @@ export default function Search() {
         <Button variant="outline" onClick={handleReset}>
           Reset
         </Button>
+        <Analyze></Analyze>
       </div>
     </div>
   ) : (

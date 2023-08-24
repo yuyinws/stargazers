@@ -29,7 +29,7 @@ export interface Account {
   addedAt: string
 }
 
-interface DB extends DBSchema {
+export interface DB extends DBSchema {
   stars: {
     value: Star
     key: string
@@ -112,7 +112,7 @@ export async function searchStar(db: IDBPDatabase<DB>, login: string, queryForm:
     })
 
   return {
-    stars: results.slice((page - 1) * size, page * size),
+    stars: size === 0 ? results : results.slice((page - 1) * size, page * size),
     total: results.length
   }
 
