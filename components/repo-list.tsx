@@ -17,7 +17,7 @@ export default function RepoList() {
   const { stars } = useStarStore((state) => state);
 
   return (
-    <div className="flex flex-wrap gap-x-8 gap-y-3">
+    <div className="flex flex-wrap gap-x-5 gap-y-3">
       {stars.length > 0 ? (
         stars.map((star) => {
           return (

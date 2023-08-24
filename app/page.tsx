@@ -3,26 +3,25 @@
 import RepoList from "@/components/repo-list";
 import Search from "@/components/search";
 import Pagination from "@/components/pagination";
-import { useAccountStore } from "@/store/account";
-import { useStarStore } from "@/store/star";
+import { useStore, useStarStore, useAccountStore } from "@/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Loading from "@/app/loading";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
-  const { getStarFromIndexDB, loading, fetchStars } = useStarStore(
-    (state) => state
-  );
-  const { currentAccount, refreshAllAccount } = useAccountStore();
+  const starStore = useStore(useStarStore, (state) => state)!;
+  const accountStore = useStore(useAccountStore, (state) => state)!;
 
   const router = useRouter();
+
   async function getAccount() {
-    if (currentAccount) {
-      if (currentAccount.lastSyncAt) {
-        await getStarFromIndexDB(currentAccount.login);
+    if (accountStore.currentAccount) {
+      if (accountStore.currentAccount.lastSyncAt) {
+        await starStore.getStarFromIndexDB(accountStore.currentAccount.login);
       } else {
-        await fetchStars(currentAccount.login);
-        await refreshAllAccount();
+        await starStore.fetchStars(accountStore.currentAccount.login);
+        await accountStore.refreshAllAccount();
       }
     } else {
       router.replace("/login");
@@ -30,20 +29,26 @@ export default function Home() {
   }
 
   useEffect(() => {
-    getAccount();
-  }, []);
+    if (accountStore) {
+      getAccount();
+    }
+  }, [accountStore]);
 
   return (
-    <div className="flex flex-col gap-3 w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[94rem] m-auto pt-2 pb-10">
-      <Search></Search>
-      {loading ? (
-        <Loading></Loading>
+    <div className="flex flex-col gap-3 w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[92rem] m-auto pt-2 pb-10">
+      {starStore ? (
+        <>
+          <Search></Search>
+          {starStore.loading ? <Loading></Loading> : <RepoList></RepoList>}
+          <Pagination></Pagination>
+        </>
       ) : (
         <>
-          <RepoList></RepoList>
+          <Skeleton className="w-full h-[3rem]"></Skeleton>
+          <Loading />
+          <Skeleton className="w-full h-[3rem]"></Skeleton>
         </>
       )}
-      <Pagination></Pagination>
     </div>
   );
 }
