@@ -52,7 +52,7 @@ export default function Search() {
   useKeyboardShortcut(["enter"], handleSearch);
 
   return starStore ? (
-    <div className="flex flex-wrap justify-between w-full">
+    <div className="flex flex-wrap gap-2 justify-between w-full">
       <div className="flex flex-wrap gap-3">
         <Select
           onValueChange={(event) => {

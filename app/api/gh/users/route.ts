@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 const query = `#graphql
 query GetUsers($query: String!) {
-  search(type: USER,query: $query,first: 10) {
+  search(type: USER,query: $query,first: 8) {
     nodes {
       ... on User {
         login

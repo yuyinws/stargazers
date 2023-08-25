@@ -5,7 +5,7 @@ import { persist } from 'zustand/middleware'
 interface AccountStore {
   currentAccount: Account | null
   allAccount: Account[]
-  setCurrentAccount: (account: Account) => void
+  setCurrentAccount: (account: Account | null) => void
   setAllAccount: (accounts: Account[]) => Promise<void>
   refreshAllAccount: () => Promise<void>
   deleteAccount: (account: Account) => Promise<void>
@@ -17,7 +17,7 @@ export const useAccountStore = create<AccountStore>()(
       currentAccount: null,
       allAccount: [],
 
-      setCurrentAccount: (account: Account) => {
+      setCurrentAccount: (account: Account | null) => {
         set(() => ({
           currentAccount: account
         }))

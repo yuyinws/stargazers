@@ -4,4 +4,5 @@
   backdrop-filter: saturate(50%) blur(4px);
   background-image: radial-gradient(transparent 1px,var(--background) 1px);
   z-index: 100;
+  border-bottom: 1px solid hsl(var(--border));
 }

@@ -53,8 +53,8 @@ export default function Login() {
   }, []);
 
   return (
-    <div className="w-full h-screen  flex justify-center">
-      <div className="py-20 flex flex-col">
+    <div className="w-full h-screen flex justify-center">
+      <div className="py-60 flex flex-col">
         <h1 className="text-3xl font-bold mb-5 px-10">Add account</h1>
         <UserSearch></UserSearch>
       </div>

@@ -35,18 +35,18 @@ export default function Home() {
   }, [accountStore]);
 
   return (
-    <div className="flex flex-col gap-3 w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[92rem] m-auto pt-2 pb-10">
-      {starStore ? (
+    <div className="h-screen flex flex-col gap-3 w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[92rem] m-auto pt-2 pb-10">
+      {!starStore || starStore?.loading ? (
         <>
-          <Search></Search>
-          {starStore.loading ? <Loading></Loading> : <RepoList></RepoList>}
-          <Pagination></Pagination>
+          <Skeleton className="w-full h-[3rem]"></Skeleton>
+          <Loading></Loading>
+          <Skeleton className="w-full h-[3rem]"></Skeleton>
         </>
       ) : (
         <>
-          <Skeleton className="w-full h-[3rem]"></Skeleton>
-          <Loading />
-          <Skeleton className="w-full h-[3rem]"></Skeleton>
+          <Search></Search>
+          <RepoList></RepoList>
+          <Pagination></Pagination>
         </>
       )}
     </div>

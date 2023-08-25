@@ -21,13 +21,13 @@ export default function Pagination() {
   const accountStore = useStore(useAccountStore, (state) => state)!;
 
   return starStore?.pagination.total > 0 ? (
-    <div className="w-full flex justify-between items-center">
-      <div className="flex gap-3 mr-5">
+    <div className="w-full flex flex-wrap justify-between items-center">
+      <div className="flex flex-wrap gap-3 mr-5">
         <span className="text-sm text-muted-foreground font-medium">
           Total: {starStore?.pagination?.total}
         </span>
       </div>
-      <div className="flex gap-5">
+      <div className="flex flex-wrap gap-5">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-muted-foreground">
             Items per page

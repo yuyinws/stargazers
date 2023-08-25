@@ -50,7 +50,7 @@ export interface DB extends DBSchema {
 }
 
 export async function initDb() {
-  const db = await openDB<DB>('GitHubStars', 1, {
+  const db = await openDB<DB>('Stargazers', 1, {
     upgrade(db) {
       const starStore = db.createObjectStore('stars', {
         keyPath: 'id',
