@@ -105,7 +105,7 @@ export default function Settings() {
   });
 
   return (
-    <div className="w-screen flex flex-col items-center gap-4 justify-center mt-4 xl:mt-[5rem]">
+    <div className="min-h-screen flex flex-col items-center gap-4 justify-center">
       <div className="rounded-sm border bg-card text-card-foreground shadow-sm p-5 w-[22rem] xl:w-[40rem]">
         <div className="text-xl font-semibold">Accounts</div>
         <div className="text-sm text-muted-foreground mb-4">
@@ -272,16 +272,12 @@ export default function Settings() {
               {deleteDBLoading ? (
                 <>
                   <Loader2Icon className="h-[1rem] w-[1rem] animate-spin"></Loader2Icon>
-                  <span className={["ml-1", "hidden", "xl:inline"].join(" ")}>
-                    Deleting ...
-                  </span>
+                  <span className={["ml-1"].join(" ")}>Deleting ...</span>
                 </>
               ) : (
                 <>
                   <Trash2Icon className="h-[1rem] w-[1rem]"></Trash2Icon>
-                  <span className={["ml-1", "hidden", "xl:inline"].join(" ")}>
-                    Delete DB
-                  </span>
+                  <span className={["ml-1"].join(" ")}>Delete DB</span>
                 </>
               )}
             </Button>

@@ -1,10 +1,13 @@
 import { ModeToggle } from "@/components/toggle-theme";
 import styles from "@/styles/header.module.css";
 import dynamic from "next/dynamic";
-import Logo from "@/components/logo";
 
 export default function Header() {
   const Account = dynamic(() => import("@/components/account"), {
+    ssr: false,
+  });
+
+  const Logo = dynamic(() => import("@/components/logo"), {
     ssr: false,
   });
 

@@ -97,7 +97,7 @@ export default function Search() {
           }}
           value={picker}
         >
-          <SelectTrigger className="w-[20rem] xl:w-[10rem]">
+          <SelectTrigger className="w-[22rem] xl:w-[10rem]">
             <SelectValue placeholder="Pick a date range"></SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -132,7 +132,7 @@ export default function Search() {
               keyword: e.target.value,
             });
           }}
-          className="w-[20rem] xl:w-[15rem] 2xl:w-[20rem]"
+          className="w-[22rem] xl:w-[15rem] 2xl:w-[20rem]"
           placeholder="search by owner, repo name, description ..."
         ></Input>
         <Input
@@ -142,7 +142,7 @@ export default function Search() {
               language: e.target.value,
             });
           }}
-          className="w-[20rem] xl:w-[15rem] 2xl:w-[20rem]"
+          className="w-[22rem] xl:w-[15rem] 2xl:w-[20rem]"
           placeholder="search by language"
         ></Input>
       </div>

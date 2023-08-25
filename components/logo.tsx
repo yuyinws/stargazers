@@ -2,9 +2,15 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Icon from "@/components/logo-icon";
 
 function logo() {
-  return <div className="cursor-default">Stargazers</div>;
+  return (
+    <div className="cursor-pointer flex items-center gap-2">
+      <Icon></Icon>
+      <div className="font-semibold">Stargazers</div>
+    </div>
+  );
 }
 
 export default function Logo() {
@@ -16,5 +22,13 @@ export default function Logo() {
     setPathname(pathname);
   }, [pathname]);
 
-  return <>{_pathname === "/" ? logo() : <Link href="/">{logo()}</Link>}</>;
+  return (
+    <>
+      {["/", "/login"].includes(_pathname) ? (
+        logo()
+      ) : (
+        <Link href="/">{logo()}</Link>
+      )}
+    </>
+  );
 }
