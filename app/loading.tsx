@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="flex flex-wrap sm:w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[94rem] m-auto gap-5">
+    <div className="flex flex-wrap gap-x-5 gap-y-3">
       {Array(12)
         .fill(0)
         .map((_, index) => {

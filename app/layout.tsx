@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/layout/header";
 import { Providers } from "./providers";
 import Footer from "@/components/layout/footer";
-import { Separator } from "@/components/ui/separator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,10 +23,9 @@ export default function RootLayout({
       <body className={`${inter.className} `}>
         <Providers>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="flex flex-col min-h-screen">
+            <div className="flex flex-col">
               <Header></Header>
               <main className="flex-1">{children}</main>
-              <Separator></Separator>
               <Footer></Footer>
             </div>
           </ThemeProvider>

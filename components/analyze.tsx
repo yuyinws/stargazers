@@ -207,11 +207,17 @@ export default function Analyze() {
           <div className="text-lg leading-none text-muted-foreground font-bold">
             Top 5 Most Star Owners
           </div>
-          <div ref={ownerChartRef} className="w-[38rem] h-[16rem]"></div>
+          <div
+            ref={ownerChartRef}
+            className="w-[24rem] sm:w-[38rem] h-[16rem]"
+          ></div>
           <div className="text-lg leading-none text-muted-foreground font-bold">
             Top 5 Most Star Languages
           </div>
-          <div ref={languageChartRef} className="w-[38rem] h-[16rem]"></div>
+          <div
+            ref={languageChartRef}
+            className="w-[24rem] sm:w-[38rem] h-[16rem]"
+          ></div>
         </div>
       </DialogContent>
     </Dialog>

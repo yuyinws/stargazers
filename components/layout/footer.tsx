@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 
 export default function Footer() {
   return (
     <footer>
+      <Separator></Separator>
       <div className="my-3 flex flex-col items-center justify-center text-sm leading-loose text-muted-foreground">
         <div className="flex gap-1">
           <span>Made by</span>

@@ -35,7 +35,7 @@ export default function Home() {
   }, [accountStore]);
 
   return (
-    <div className="h-screen flex flex-col gap-3 w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[92rem] m-auto pt-2 pb-10">
+    <div className="min-h-screen flex flex-col gap-3 w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[92rem] m-auto pt-2 pb-10">
       {!starStore || starStore?.loading ? (
         <>
           <Skeleton className="w-full h-[3rem]"></Skeleton>
