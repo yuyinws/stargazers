@@ -33,7 +33,7 @@ interface StarStore {
   setPagintion: (pagination: Partial<Pagination>) => void
 }
 
-const startTimeMap: Record<string, Date> = {
+export const startTimeMap: Record<string, Date> = {
   0: subMonths(new Date(), 3),
   1: subMonths(new Date(), 6),
   2: subYears(new Date(), 1),

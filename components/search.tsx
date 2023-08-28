@@ -10,6 +10,7 @@ import {
   useStarStore,
   useAccountStore,
   useSettingStore,
+  startTimeMap,
 } from "@/store";
 import {
   Select,
@@ -27,7 +28,6 @@ export default function Search() {
   const starStore = useStore(useStarStore, (state) => state)!;
   const accountStore = useStore(useAccountStore, (state) => state)!;
   const settingStore = useStore(useSettingStore, (state) => state)!;
-  // const [picker, setPicker] = useState("2");
 
   function handleSearch() {
     console.log(starStore);
@@ -56,17 +56,6 @@ export default function Search() {
 
   useKeyboardShortcut(["enter"], handleSearch);
 
-  useEffect(() => {
-    // console.log({
-    //   settingStore,
-    // });
-    // if (settingStore) {
-    //   starStore.setQueryForm({
-    //     startTimeId: settingStore.settings.dateRange,
-    //   });
-    // }
-  }, []);
-
   return starStore ? (
     <div className="flex flex-wrap gap-2 justify-between w-full">
       <div className="flex flex-wrap gap-3">
@@ -75,6 +64,12 @@ export default function Search() {
             starStore.setQueryForm({
               startTimeId: event,
             });
+            starStore.setQueryForm({
+              startTime: startTimeMap[event],
+            });
+
+            starStore.syncSearchQueryForm();
+            starStore.getStarFromIndexDB(accountStore.currentAccount?.login!);
           }}
           value={starStore.queryForm.startTimeId}
         >

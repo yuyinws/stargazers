@@ -8,10 +8,10 @@ import {
   useStarStore,
   useAccountStore,
   useSettingStore,
+  startTimeMap,
 } from "@/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Loading from "@/app/loading";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
@@ -26,6 +26,9 @@ export default function Home() {
         const dateRange = settingStore.settings.dateRange;
         starStore.setQueryForm({
           startTimeId: dateRange,
+        });
+        starStore.setQueryForm({
+          startTime: startTimeMap[dateRange],
         });
 
         starStore.syncSearchQueryForm();
