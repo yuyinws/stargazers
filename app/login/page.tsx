@@ -97,7 +97,7 @@ export default function Login() {
           Stargazers
         </h1>
         <h2
-          className={`${styles.slogan} text-muted-foreground text-xl xl:text-2xl mb-10`}
+          className={`${styles.slogan} text-center text-muted-foreground text-xl xl:text-2xl mb-10`}
         >
           Analyze and explore the stars of any GitHub user.
         </h2>
