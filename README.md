@@ -1,34 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ⭐️ Stargazers
 
-## Getting Started
+Analyze and explore the stars of any GitHub user.
 
-First, run the development server:
+## Introduce
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+[Stargazers](https://github.com/yuyinws/stargazers) is a web application that allows you to add multiple GitHub accounts and analyze and explore their star lists.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+![CleanShot 2023-08-28 at 20.39.31@2x](https://cdn.jsdelivr.net/gh/yuyinws/static@master/2023/08/upgit_20230828_1693226415.png)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+![CleanShot 2023-08-28 at 20.43.28@2x](https://cdn.jsdelivr.net/gh/yuyinws/static@master/2023/08/upgit_20230828_1693226665.png)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+![CleanShot 2023-08-28 at 20.55.31@2x](https://cdn.jsdelivr.net/gh/yuyinws/static@master/2023/08/upgit_20230828_1693227392.png)
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Add accounts through search, GitHub OAuth, or a one-click button (by [UserScript](#UserScript)).
+- Supports adding multiple accounts.
+- Explore star lists by star timestamp, programming language, and repository metadata.
 
-## Deploy on Vercel
+- Analyze the star list to display the user with the most stars and the programming language with the most stars.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Dark mode support.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+## UserScript
+
+![CleanShot 2023-08-28 at 21.15.21@2x](https://cdn.jsdelivr.net/gh/yuyinws/static@master/2023/08/upgit_20230828_1693228551.png)
+
+[Install from greasyfork](https://greasyfork.org/en/scripts/474055-add-to-stargazers)
+
+A userscript that adds a button on the GitHub user profile page, allowing you to easily add it to stargazers.
+
+
+
+## Build with
+
+[NextJS](https://nextjs.org/)
+
+[shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+
+[Indexdb](https://github.com/jakearchibald/idb)
+
+[GitHub GraphQL API](https://docs.github.com/en/graphql)
+
+[Vercel](https://vercel.com/)
