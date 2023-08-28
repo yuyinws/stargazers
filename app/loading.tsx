@@ -1,28 +1,14 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2Icon } from "lucide-react";
 
 export default function Loading() {
+  // create a full screen mask loading
   return (
-    <div className="flex flex-wrap gap-x-5 gap-y-3">
-      {Array(12)
-        .fill(0)
-        .map((_, index) => {
-          return (
-            <div key={index}>
-              <div className="rounded-lg border bg-card text-card-foreground w-[22rem] h-[11rem]">
-                <div className="px-5 py-3 h-full flex flex-col justify-between">
-                  <div>
-                    <div className="flex gap-2">
-                      <Skeleton className="h-[1.5rem] w-[1.5rem] rounded-full"></Skeleton>
-                      <Skeleton className="h-[1.3rem] flex-1"></Skeleton>
-                    </div>
-                    <Skeleton className="h-[1.3rem] flex-1 mt-2"></Skeleton>
-                    <Skeleton className="h-[5rem] flex-1 mt-2"></Skeleton>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-    </div>
+    <>
+      <div className="w-screen h-screen flex justify-center items-center fixed inset-0 bg-gray-300 bg-opacity-50 z-50">
+        <Loader2Icon className="text-gray-500 h-[3rem] w-[3rem] animate-spin"></Loader2Icon>
+      </div>
+      <div className="h-screen"></div>
+    </>
   );
 }
