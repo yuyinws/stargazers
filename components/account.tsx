@@ -56,7 +56,6 @@ export default function Account() {
             <div
               key={account.login}
               onClick={async () => {
-                console.log("xxxxx");
                 if (currentAccount?.login === account.login) return;
                 setCurrentAccount(account);
                 setOpen(false);

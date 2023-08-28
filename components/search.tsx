@@ -22,7 +22,6 @@ export default function Search() {
   const accountStore = useStore(useAccountStore, (state) => state)!;
 
   function handleSearch() {
-    console.log(starStore);
     starStore.syncSearchQueryForm();
     starStore.setPagintion({
       page: 1,
