@@ -1,8 +1,9 @@
 import { Account } from '@/lib/db';
 import { create } from 'zustand'
 import { Star, initDb, searchStar, addStar } from '@/lib/db'
-import { subMonths, getUnixTime,subYears } from "date-fns";
+import { subMonths, getUnixTime, subYears } from "date-fns";
 import { cloneDeep } from 'lodash'
+import { toast } from 'sonner'
 
 export interface QueryForm {
   startTimeId?: string
@@ -101,12 +102,14 @@ export const useStarStore = create<StarStore>((set, get) => {
 
     fetchStars: async (username: string) => {
       try {
-        console.log('fetch star')
         set(() => ({
           loading: true
         }))
 
-        
+        toast('Start fetching...', {
+          description: 'It may take a few minutes, depending on the number of stars for this account..',
+          duration: 5000
+        })
 
         const db = await initDb()
 
@@ -122,7 +125,7 @@ export const useStarStore = create<StarStore>((set, get) => {
 
           const stars = data.data.stars
           const pageInfo = data.data.pageInfo
-  
+
           const transactions: any[] = stars.map((star: Star) => {
             return star
           })

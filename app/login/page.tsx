@@ -57,13 +57,6 @@ export default function Login() {
 
         addedUserLogin = user.login;
 
-        // if (settingStore.settings.autoSwitch) {
-        //   const findAccount = accountStore.allAccount.find(
-        //     (account) => account.login === userInfo.login
-        //   );
-        //   if (findAccount) accountStore?.setCurrentAccount(findAccount);
-        // }
-
         toast.success("Account added");
       } catch (error) {
         toast.error("Error adding account", {
@@ -76,7 +69,7 @@ export default function Login() {
     if (accounts?.length > 0) {
       accountStore?.setAllAccount(accounts);
 
-      if (settingStore.settings.autoSwitch) {
+      if (settingStore.settings.autoSwitch && addedUserLogin) {
         const findAccount = accountStore.allAccount.find(
           (account) => account.login === addedUserLogin
         );
