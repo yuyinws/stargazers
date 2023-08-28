@@ -3,22 +3,34 @@
 import RepoList from "@/components/repo-list";
 import Search from "@/components/search";
 import Pagination from "@/components/pagination";
-import { useStore, useStarStore, useAccountStore } from "@/store";
+import {
+  useStore,
+  useStarStore,
+  useAccountStore,
+  useSettingStore,
+} from "@/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Loading from "@/app/loading";
 import { Skeleton } from "@/components/ui/skeleton";
+import { subMonths, subYears } from "date-fns";
 
 export default function Home() {
   const starStore = useStore(useStarStore, (state) => state)!;
   const accountStore = useStore(useAccountStore, (state) => state)!;
-
+  const settingStore = useStore(useSettingStore, (state) => state)!;
   const router = useRouter();
 
   async function getAccount() {
     if (accountStore.currentAccount) {
       if (accountStore.currentAccount.lastSyncAt) {
-        await starStore.getStarFromIndexDB(accountStore.currentAccount.login);
+        const dateRange = settingStore.settings.dateRange;
+        starStore.setQueryForm({
+          startTimeId: dateRange,
+        });
+
+        starStore.syncSearchQueryForm();
+        await starStore.getStarFromIndexDB(accountStore!.currentAccount!.login);
       } else {
         await starStore.fetchStars(accountStore.currentAccount.login);
         await accountStore.refreshAllAccount();

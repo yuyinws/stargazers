@@ -1,15 +1,7 @@
 "use client";
 
-import { useAccountStore } from "@/store/account";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Trash2Icon, RefreshCcwIcon, Loader2Icon } from "lucide-react";
-import { useStore } from "@/store/useStore";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { Account } from "@/lib/db";
-import { deleteDB } from "idb";
+import { Separator } from "@/components/ui/separator";
+import { useStore, useAccountStore, useStarStore } from "@/store";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,35 +13,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useStarStore } from "@/store/star";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { initDb } from "@/lib/db";
+import { cn } from "@/lib/utils";
+import dayjs from "dayjs";
+import { Button } from "@/components/ui/button";
+import { Trash2Icon, RefreshCcwIcon, Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { Account } from "@/lib/db";
+import { useRouter } from "next/navigation";
+import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
+
 export default function Settings() {
   const accountStore = useStore(useAccountStore, (state) => state);
   const starStore = useStore(useStarStore, (state) => state);
-  const [count, setCount] = useState({
-    account: 0,
-    star: 0,
-  });
+
   const router = useRouter();
 
   const [currentSyncIndex, setCurrentSyncIndex] = useState(0);
   const [currentDeleteIndex, setCurrentDeleteIndex] = useState(0);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [deleteDBLoading, setDeleteDBLoading] = useState(false);
 
   async function handleDeleteAccount(account: Account, index: number) {
     try {
@@ -84,34 +70,20 @@ export default function Settings() {
     }
   }
 
-  async function getDBTableCount() {
-    try {
-      const db = await initDb();
-      const starCount = await db.count("stars");
-      const accountCount = await db.count("accounts");
-
-      setCount({
-        account: accountCount,
-        star: starCount,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   useEffect(() => {
     if (accountStore?.allAccount?.length === 0) router.replace("/login");
-    else getDBTableCount();
   });
 
   return (
-    <div className="min-h-screen flex flex-col items-center gap-4 justify-center">
-      <div className="rounded-sm border bg-card text-card-foreground shadow-sm p-5 w-[22rem] xl:w-[40rem]">
-        <div className="text-xl font-semibold">Accounts</div>
-        <div className="text-sm text-muted-foreground mb-4">
-          Manage existing accounts and sync star data from GitHub
-        </div>
-
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium">Account</h3>
+        <p className="text-sm text-muted-foreground">
+          Manage existing accounts and sync star data from GitHub.
+        </p>
+      </div>
+      <Separator />
+      <div>
         {accountStore?.allAccount?.length ? (
           <div className="flex flex-col gap-3">
             {accountStore?.allAccount?.map((account, index) => (
@@ -136,9 +108,7 @@ export default function Settings() {
 
                 <div className="flex gap-2 items-center">
                   <Button
-                    disabled={
-                      starStore?.loading || deleteLoading || deleteDBLoading
-                    }
+                    disabled={starStore?.loading || deleteLoading}
                     onClick={() => handleSync(account.login, index)}
                     size="sm"
                     variant="outline"
@@ -166,9 +136,7 @@ export default function Settings() {
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
-                        disabled={
-                          starStore?.loading || deleteLoading || deleteDBLoading
-                        }
+                        disabled={starStore?.loading || deleteLoading}
                         size="sm"
                         variant="destructive"
                       >
@@ -223,7 +191,7 @@ export default function Settings() {
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            {Array(3)
+            {Array(5)
               .fill(0)
               .map((_, index) => {
                 return (
@@ -235,86 +203,6 @@ export default function Settings() {
               })}
           </div>
         )}
-      </div>
-
-      <div className="rounded-sm border bg-card text-card-foreground shadow-sm p-5 w-[22rem] xl:w-[40rem]">
-        <div className="text-xl font-semibold">IndexDB</div>
-        <div className="text-sm text-muted-foreground mb-4">
-          IndexDB overview
-        </div>
-        <Table>
-          {/* <TableCaption>current tables and amount</TableCaption> */}
-          <TableHeader>
-            <TableRow>
-              <TableHead>Table name</TableHead>
-              <TableHead>Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell>accounts</TableCell>
-              <TableCell>{count.account}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>stars</TableCell>
-              <TableCell>{count.star}</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              disabled={starStore?.loading || deleteLoading || deleteDBLoading}
-              size="sm"
-              variant="destructive"
-            >
-              {deleteDBLoading ? (
-                <>
-                  <Loader2Icon className="h-[1rem] w-[1rem] animate-spin"></Loader2Icon>
-                  <span className={["ml-1"].join(" ")}>Deleting ...</span>
-                </>
-              ) : (
-                <>
-                  <Trash2Icon className="h-[1rem] w-[1rem]"></Trash2Icon>
-                  <span className={["ml-1"].join(" ")}>Delete DB</span>
-                </>
-              )}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                If you encounter some unexpected errors, you can try deleting
-                IndexDB.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={async () => {
-                  try {
-                    setDeleteDBLoading(true);
-                    await deleteDB("Stargazers");
-                    accountStore?.setAllAccount([]);
-                    accountStore?.setCurrentAccount(null);
-                    router.replace("/login");
-                    toast.success("DB deleted");
-                  } catch (error) {
-                    toast.error("Error deleting DB", {
-                      description: String(error),
-                    });
-                  } finally {
-                    setDeleteDBLoading(false);
-                  }
-                }}
-              >
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
     </div>
   );

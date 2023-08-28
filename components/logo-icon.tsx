@@ -3,8 +3,8 @@ export default function LogoIcon() {
   const { resolvedTheme } = useTheme();
   return (
     <svg
-      width="32"
-      height="32"
+      width="24"
+      height="24"
       viewBox="0 0 382 362"
       xmlns="http://www.w3.org/2000/svg"
     >

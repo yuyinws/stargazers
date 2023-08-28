@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 import { subMonths, subYears } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { Input } from "@/components/ui/input";
-import { useStore } from "@/store/useStore";
-import { useStarStore } from "@/store/star";
-import { useAccountStore } from "@/store/account";
+import {
+  useStore,
+  useStarStore,
+  useAccountStore,
+  useSettingStore,
+} from "@/store";
 import {
   Select,
   SelectContent,
@@ -17,15 +20,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Analyze from "@/components/analyze";
 
 export default function Search() {
   const starStore = useStore(useStarStore, (state) => state)!;
   const accountStore = useStore(useAccountStore, (state) => state)!;
-  const [picker, setPicker] = useState("2");
+  const settingStore = useStore(useSettingStore, (state) => state)!;
+  // const [picker, setPicker] = useState("2");
 
   function handleSearch() {
+    console.log(starStore);
     starStore.syncSearchQueryForm();
     starStore.setPagintion({
       page: 1,
@@ -34,7 +39,7 @@ export default function Search() {
   }
 
   function handleReset() {
-    setPicker("2");
+    // setPicker("2");
     starStore.setQueryForm({
       startTime: subMonths(new Date(), 12),
       endTime: new Date(),
@@ -51,51 +56,27 @@ export default function Search() {
 
   useKeyboardShortcut(["enter"], handleSearch);
 
+  useEffect(() => {
+    // console.log({
+    //   settingStore,
+    // });
+    // if (settingStore) {
+    //   starStore.setQueryForm({
+    //     startTimeId: settingStore.settings.dateRange,
+    //   });
+    // }
+  }, []);
+
   return starStore ? (
     <div className="flex flex-wrap gap-2 justify-between w-full">
       <div className="flex flex-wrap gap-3">
         <Select
           onValueChange={(event) => {
-            switch (event) {
-              case "0":
-                starStore.setQueryForm({
-                  startTime: subMonths(new Date(), 3),
-                  endTime: new Date(),
-                });
-                break;
-              case "1":
-                starStore.setQueryForm({
-                  startTime: subMonths(new Date(), 6),
-                  endTime: new Date(),
-                });
-                break;
-              case "2":
-                starStore.setQueryForm({
-                  startTime: subYears(new Date(), 1),
-                  endTime: new Date(),
-                });
-                break;
-              case "3":
-                starStore.setQueryForm({
-                  startTime: subYears(new Date(), 2),
-                  endTime: new Date(),
-                });
-                break;
-              case "4":
-                starStore.setQueryForm({
-                  startTime: subYears(new Date(), 5),
-                  endTime: new Date(),
-                });
-              case "5":
-                starStore.setQueryForm({
-                  startTime: subYears(new Date(), 10),
-                  endTime: new Date(),
-                });
-            }
-
-            setPicker(event);
+            starStore.setQueryForm({
+              startTimeId: event,
+            });
           }}
-          value={picker}
+          value={starStore.queryForm.startTimeId}
         >
           <SelectTrigger className="w-[22rem] xl:w-[10rem]">
             <SelectValue placeholder="Pick a date range"></SelectValue>
@@ -108,6 +89,7 @@ export default function Search() {
               <SelectItem value="3">Last 2 year</SelectItem>
               <SelectItem value="4">Last 5 year</SelectItem>
               <SelectItem value="5">Last 10 year</SelectItem>
+              <SelectItem value="6">Last 20 year</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

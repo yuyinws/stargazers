@@ -1,11 +1,12 @@
 import { Account } from '@/lib/db';
 import { create } from 'zustand'
 import { Star, initDb, searchStar, addStar } from '@/lib/db'
-import { subMonths, getUnixTime } from "date-fns";
+import { subMonths, getUnixTime,subYears } from "date-fns";
 import { cloneDeep } from 'lodash'
 
 export interface QueryForm {
-  startTime: Date | number
+  startTimeId?: string
+  startTime?: Date | number
   endTime: Date | number
   keyword: string
   language: string
@@ -31,20 +32,30 @@ interface StarStore {
   setPagintion: (pagination: Partial<Pagination>) => void
 }
 
-
+const startTimeMap: Record<string, Date> = {
+  0: subMonths(new Date(), 3),
+  1: subMonths(new Date(), 6),
+  2: subYears(new Date(), 1),
+  3: subYears(new Date(), 2),
+  4: subYears(new Date(), 5),
+  5: subYears(new Date(), 10),
+  6: subYears(new Date(), 20),
+}
 
 export const useStarStore = create<StarStore>((set, get) => {
   return {
     stars: [],
     loading: false,
     queryForm: {
-      startTime: subMonths(new Date(), 12),
+      startTimeId: '2',
+      startTime: startTimeMap[2],
       endTime: new Date(),
       keyword: '',
       language: '',
     },
     searchQueryForm: {
-      startTime: subMonths(new Date(), 12),
+      startTimeId: '2',
+      startTime: startTimeMap[2],
       endTime: new Date(),
       keyword: '',
       language: '',
@@ -64,8 +75,8 @@ export const useStarStore = create<StarStore>((set, get) => {
         const db = await initDb()
 
         const searchQueryForm = cloneDeep(get().searchQueryForm)
-        searchQueryForm.startTime = searchQueryForm.startTime ? getUnixTime(searchQueryForm.startTime) : -Infinity
-        searchQueryForm.endTime = searchQueryForm.endTime ? getUnixTime(searchQueryForm.endTime) : Infinity
+
+        searchQueryForm.startTime = searchQueryForm.startTimeId ? getUnixTime(startTimeMap[searchQueryForm.startTimeId]) : -Infinity
 
         const results = await searchStar(db, username, {
           ...searchQueryForm,

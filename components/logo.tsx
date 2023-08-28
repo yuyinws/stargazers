@@ -8,7 +8,7 @@ function logo() {
   return (
     <div className="cursor-pointer flex items-center gap-2">
       <Icon></Icon>
-      <div className="font-semibold">Stargazers</div>
+      {/* <div className="font-semibold">Stargazers</div> */}
     </div>
   );
 }
