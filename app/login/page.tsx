@@ -14,6 +14,7 @@ export default function Login() {
   const accountStore = useAccountStore();
 
   const access_token = searchParams.get("access_token");
+  const encode = searchParams.get("encode");
   async function getAccount() {
     const db = await initDb();
 
@@ -36,6 +37,22 @@ export default function Login() {
           description: String(error),
         });
       }
+    } else if (encode) {
+      try {
+        const decoded = atob(encode);
+        const userInfo = JSON.parse(decoded);
+
+        await addAccount(db, {
+          login: userInfo.login,
+          name: userInfo.name,
+          avatarUrl: userInfo.avatar_url,
+          from: "github",
+          lastSyncAt: "",
+          addedAt: new Date().toISOString(),
+        });
+
+        toast.success("Account added");
+      } catch (error) {}
     }
 
     const accounts = await getAllAccount(db);
