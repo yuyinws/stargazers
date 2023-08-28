@@ -15,10 +15,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
 
 export default function Pagination() {
   const starStore = useStore(useStarStore, (state) => state)!;
   const accountStore = useStore(useAccountStore, (state) => state)!;
+
+  useKeyboardShortcut(["arrowright"], () => {
+    if (
+      starStore.pagination.page ===
+      Number(Math.ceil(starStore?.pagination?.total / 12))
+    )
+      return;
+
+    starStore.setPagintion({
+      page: starStore?.pagination?.page! + 1,
+    });
+
+    starStore.getStarFromIndexDB(accountStore.currentAccount?.login!);
+  });
+
+  useKeyboardShortcut(["arrowleft"], () => {
+    if (starStore?.pagination?.page <= 1) return;
+
+    starStore.setPagintion({
+      page: starStore?.pagination?.page! - 1,
+    });
+
+    starStore.getStarFromIndexDB(accountStore.currentAccount?.login!);
+  });
 
   return starStore?.pagination.total > 0 ? (
     <div className="w-full flex flex-wrap justify-between items-center">
