@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { useAccountStore, useSettingStore } from "@/store";
 import styles from "@/styles/login.module.css";
+import Balancer from "react-wrap-balancer";
 
 export default function Login() {
   const router = useRouter();
@@ -97,9 +98,9 @@ export default function Login() {
           Stargazers
         </h1>
         <h2
-          className={`${styles.slogan} text-center text-muted-foreground text-xl xl:text-2xl mb-10`}
+          className={`text-center text-muted-foreground text-xl xl:text-2xl mb-10`}
         >
-          Analyze and explore the stars of any GitHub user.
+          <Balancer>Analyze and explore the stars of any GitHub user.</Balancer>
         </h2>
         <UserSearch></UserSearch>
       </div>
