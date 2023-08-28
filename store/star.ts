@@ -101,9 +101,12 @@ export const useStarStore = create<StarStore>((set, get) => {
 
     fetchStars: async (username: string) => {
       try {
+        console.log('fetch star')
         set(() => ({
           loading: true
         }))
+
+        
 
         const db = await initDb()
 

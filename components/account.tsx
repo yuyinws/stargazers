@@ -20,8 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import UserSearch from "@/components/user-search";
-import { useStarStore } from "@/store/star";
-import { useAccountStore } from "@/store/account";
+import { useStarStore, useAccountStore, useSettingStore } from "@/store";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
@@ -35,6 +34,7 @@ export default function Account() {
     useStarStore();
   const { currentAccount, setCurrentAccount, allAccount, refreshAllAccount } =
     useAccountStore();
+  const { settings } = useSettingStore();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -56,12 +56,12 @@ export default function Account() {
             <div
               key={account.login}
               onClick={async () => {
+                console.log("xxxxx");
                 if (currentAccount?.login === account.login) return;
                 setCurrentAccount(account);
                 setOpen(false);
                 setQueryForm({
-                  startTime: subMonths(new Date(), 12),
-                  endTime: new Date(),
+                  startTimeId: settings.dateRange,
                   keyword: "",
                   language: "",
                 });

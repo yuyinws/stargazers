@@ -43,7 +43,7 @@ export default function Home() {
     if (accountStore) {
       getAccount();
     }
-  }, [accountStore]);
+  }, [accountStore?.allAccount]);
 
   return (
     <div className="min-h-screen flex flex-col gap-3 w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[92rem] m-auto pt-2 pb-10">
