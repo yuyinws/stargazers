@@ -18,7 +18,7 @@ import { initDb, addAccount, getAllAccount } from "@/lib/db";
 import { toast } from "sonner";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useAccountStore } from "@/store/account";
+import { useAccountStore, useSettingStore } from "@/store";
 import Link from "next/link";
 import { GITHUB_CLIENT_ID } from "@/lib/constant";
 
@@ -44,8 +44,9 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
 
   const router = useRouter();
 
-  const { setCurrentAccount, currentAccount, setAllAccount } =
-    useAccountStore();
+  const accountStore = useAccountStore();
+
+  const settingStore = useSettingStore();
 
   const handleInputChange = debounce(async (event: any) => {
     try {
@@ -90,9 +91,17 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
         });
 
         const accounts = await getAllAccount(db);
-        setAllAccount(accounts);
-        if (!currentAccount) {
-          setCurrentAccount(accounts[0]);
+        accountStore.setAllAccount(accounts);
+
+        if (settingStore.settings.autoSwitch) {
+          const findAccount = accounts.find(
+            (account) => account.login === user.value
+          );
+          if (findAccount) accountStore.setCurrentAccount(findAccount);
+        }
+
+        if (!accountStore.currentAccount) {
+          accountStore.setCurrentAccount(accounts[0]);
         }
 
         toast.success("Account added");

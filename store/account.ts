@@ -6,7 +6,7 @@ interface AccountStore {
   currentAccount: Account | null
   allAccount: Account[]
   setCurrentAccount: (account: Account | null) => void
-  setAllAccount: (accounts: Account[]) => Promise<void>
+  setAllAccount: (accounts: Account[]) => void
   refreshAllAccount: () => Promise<void>
   deleteAccount: (account: Account) => Promise<void>
 }
@@ -35,7 +35,7 @@ export const useAccountStore = create<AccountStore>()(
         }))
       },
 
-      setAllAccount: async (accounts: Account[]) => {
+      setAllAccount: (accounts: Account[]) => {
         set(() => ({
           allAccount: accounts
         }))

@@ -11,12 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { subMonths, subYears } from "date-fns";
 import { toast } from "sonner";
 
 export default function Settings() {
   const settingStore = useStore(useSettingStore, (state) => state)!;
-  const starStore = useStore(useStarStore, (state) => state)!;
 
   return (
     <div className="space-y-6">

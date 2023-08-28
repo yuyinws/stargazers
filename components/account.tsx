@@ -123,6 +123,7 @@ export default function Account() {
               </AlertDialogHeader>
               <UserSearch
                 callback={() => {
+                  setOpen(false);
                   setDialogOpen(false);
                 }}
               ></UserSearch>

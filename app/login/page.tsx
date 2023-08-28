@@ -5,18 +5,20 @@ import { initDb, getAllAccount, addAccount } from "@/lib/db";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { useAccountStore } from "@/store/account";
+import { useAccountStore, useSettingStore } from "@/store";
 
 export default function Login() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const accountStore = useAccountStore();
+  const settingStore = useSettingStore();
 
   const access_token = searchParams.get("access_token");
   const encode = searchParams.get("encode");
   async function getAccount() {
     const db = await initDb();
+    let addedUserLogin = "";
 
     if (access_token) {
       const response = await fetch("/api/gh/user?access_token=" + access_token);
@@ -31,6 +33,8 @@ export default function Login() {
           addedAt: new Date().toISOString(),
         });
 
+        addedUserLogin = user.login;
+
         toast.success("Account added");
       } catch (error) {
         toast.error("Error adding account", {
@@ -40,16 +44,25 @@ export default function Login() {
     } else if (encode) {
       try {
         const decoded = decodeURIComponent(atob(encode));
-        const userInfo = JSON.parse(decoded);
+        const user = JSON.parse(decoded);
 
         await addAccount(db, {
-          login: userInfo.login,
-          name: userInfo.name,
-          avatarUrl: userInfo.avatar_url,
+          login: user.login,
+          name: user.name,
+          avatarUrl: user.avatar_url,
           from: "github",
           lastSyncAt: "",
           addedAt: new Date().toISOString(),
         });
+
+        addedUserLogin = user.login;
+
+        // if (settingStore.settings.autoSwitch) {
+        //   const findAccount = accountStore.allAccount.find(
+        //     (account) => account.login === userInfo.login
+        //   );
+        //   if (findAccount) accountStore?.setCurrentAccount(findAccount);
+        // }
 
         toast.success("Account added");
       } catch (error) {
@@ -62,6 +75,14 @@ export default function Login() {
     const accounts = await getAllAccount(db);
     if (accounts?.length > 0) {
       accountStore?.setAllAccount(accounts);
+
+      if (settingStore.settings.autoSwitch) {
+        const findAccount = accountStore.allAccount.find(
+          (account) => account.login === addedUserLogin
+        );
+        if (findAccount) accountStore?.setCurrentAccount(findAccount);
+      }
+
       if (!accountStore?.currentAccount) {
         accountStore?.setCurrentAccount(accounts[0]);
       }

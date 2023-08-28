@@ -117,7 +117,7 @@ export default function Settings() {
                       <>
                         <Loader2Icon className="h-[1rem] w-[1rem] animate-spin"></Loader2Icon>
                         <span
-                          className={["ml-1", "hidden", "xl:inline"].join(" ")}
+                          className={["ml-1", "hidden", "sm:inline"].join(" ")}
                         >
                           Syncing ...
                         </span>
@@ -126,7 +126,7 @@ export default function Settings() {
                       <>
                         <RefreshCcwIcon className="h-[1rem] w-[1rem]"></RefreshCcwIcon>
                         <span
-                          className={["ml-1", "hidden", "xl:inline"].join(" ")}
+                          className={["ml-1", "hidden", "sm:inline"].join(" ")}
                         >
                           Sync
                         </span>
@@ -144,7 +144,7 @@ export default function Settings() {
                           <>
                             <Loader2Icon className="h-[1rem] w-[1rem] animate-spin"></Loader2Icon>
                             <span
-                              className={["ml-1", "hidden", "xl:inline"].join(
+                              className={["ml-1", "hidden", "sm:inline"].join(
                                 " "
                               )}
                             >
@@ -155,7 +155,7 @@ export default function Settings() {
                           <>
                             <Trash2Icon className="h-[1rem] w-[1rem]"></Trash2Icon>
                             <span
-                              className={["ml-1", "hidden", "xl:inline"].join(
+                              className={["ml-1", "hidden", "sm:inline"].join(
                                 " "
                               )}
                             >
