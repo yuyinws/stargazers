@@ -72,7 +72,7 @@ export default function Login() {
       accountStore?.setAllAccount(accounts);
 
       if (settingStore.settings.autoSwitch && addedUserLogin) {
-        const findAccount = accountStore.allAccount.find(
+        const findAccount = accounts.find(
           (account) => account.login === addedUserLogin
         );
         if (findAccount) accountStore?.setCurrentAccount(findAccount);
