@@ -36,14 +36,15 @@
           const regex = /(.*?)\((.*?)\)/;
           const match = title.match(regex);
 
-          console.log(match)
-          const avatar_url = document.querySelector("[alt='Avatar']").getAttribute('src')
+          const avatar_url = document.querySelector(".avatar-user")?.getAttribute('src')
 
-          const encode = btoa(JSON.stringify({
+          const userInfo = {
             login: match[1],
             name: match[2],
             avatar_url,
-          }))
+          }
+
+          const encode = btoa(encodeURIComponent(JSON.stringify(userInfo)))
 
 
           const reference = document.querySelector('.js-profile-editable-area')
@@ -52,7 +53,7 @@
           insert.innerHTML = 'Add to Stargazers'
           insert.className = 'btn btn-block mb-md-3'
           insert.target = '_blank'
-          insert.href = "https://stargazers.dev?encode=" + encode
+          insert.href = "https://stargazers.dev/login?encode=" + encode
           parent.insertBefore(insert, reference)
       }
 

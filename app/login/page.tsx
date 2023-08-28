@@ -39,7 +39,7 @@ export default function Login() {
       }
     } else if (encode) {
       try {
-        const decoded = atob(encode);
+        const decoded = decodeURIComponent(atob(encode));
         const userInfo = JSON.parse(decoded);
 
         await addAccount(db, {
@@ -52,7 +52,11 @@ export default function Login() {
         });
 
         toast.success("Account added");
-      } catch (error) {}
+      } catch (error) {
+        toast.error("Error adding account", {
+          description: String(error),
+        });
+      }
     }
 
     const accounts = await getAllAccount(db);
