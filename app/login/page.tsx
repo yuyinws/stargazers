@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useAccountStore, useSettingStore } from "@/store";
+import styles from "@/styles/login.module.css";
 
 export default function Login() {
   const router = useRouter();
@@ -88,11 +89,20 @@ export default function Login() {
   }, []);
 
   return (
-    <div className="w-full h-screen flex justify-center">
-      <div className="py-60 flex flex-col">
-        <h1 className="text-3xl font-bold mb-5 px-10">Add account</h1>
+    <>
+      <div className="w-full h-screen flex flex-col items-center mt-20">
+        <h1
+          className={`${styles.title} text-5xl xl:text-7xl font-bold !leading-[1.5]`}
+        >
+          Stargazers
+        </h1>
+        <h2
+          className={`${styles.slogan} text-muted-foreground text-xl xl:text-2xl mb-10`}
+        >
+          Analyze and explore the stars of any GitHub user.
+        </h2>
         <UserSearch></UserSearch>
       </div>
-    </div>
+    </>
   );
 }

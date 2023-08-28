@@ -2,16 +2,10 @@
 
 import DatePicker from "./date-picker";
 import { Button } from "@/components/ui/button";
-import { subMonths, subYears } from "date-fns";
+import { subMonths } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { Input } from "@/components/ui/input";
-import {
-  useStore,
-  useStarStore,
-  useAccountStore,
-  useSettingStore,
-  startTimeMap,
-} from "@/store";
+import { useStore, useStarStore, useAccountStore, startTimeMap } from "@/store";
 import {
   Select,
   SelectContent,
@@ -21,13 +15,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useKeyboardShortcut } from "@/lib/useKeyboardShortcut";
-import { useState, useEffect } from "react";
 import Analyze from "@/components/analyze";
 
 export default function Search() {
   const starStore = useStore(useStarStore, (state) => state)!;
   const accountStore = useStore(useAccountStore, (state) => state)!;
-  const settingStore = useStore(useSettingStore, (state) => state)!;
 
   function handleSearch() {
     console.log(starStore);
