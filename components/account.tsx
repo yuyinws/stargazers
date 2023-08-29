@@ -75,7 +75,7 @@ export default function Account() {
                   }
                 }}
                 className={[
-                  "flex py-1.5 px-2 rounded-sm justify-between items-center hover:bg-accent",
+                  "flex gap-2 py-1.5 px-2 rounded-sm justify-between items-center hover:bg-accent",
                   currentAccount?.login === account.login
                     ? "cursor-not-allowed"
                     : "cursor-pointer",
@@ -90,10 +90,12 @@ export default function Account() {
                       <Skeleton className="h-[1.4rem] w-[1.4rem] rounded-full"></Skeleton>
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm">{account.name}</span>
+                  <div className="text-sm truncate max-w-[7rem]">
+                    {account.name}
+                  </div>
                 </div>
                 {currentAccount!.login === account.login && (
-                  <CheckIcon className="text-accent-foreground h-[1rem] w-[1rem]"></CheckIcon>
+                  <CheckIcon className="flex-shrink-0 text-accent-foreground h-[1rem] w-[1rem]"></CheckIcon>
                 )}
               </div>
             ))}
