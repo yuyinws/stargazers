@@ -18,7 +18,7 @@ import { initDb, addAccount, getAllAccount } from "@/lib/db";
 import { toast } from "sonner";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
-import { useAccountStore, useSettingStore } from "@/store";
+import { useAccountStore, useSettingStore, useStarStore } from "@/store";
 import Link from "next/link";
 import { GITHUB_CLIENT_ID } from "@/lib/constant";
 
@@ -47,6 +47,7 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
   const accountStore = useAccountStore();
 
   const settingStore = useSettingStore();
+  const starStore = useStarStore();
 
   const handleInputChange = debounce(async (event: any) => {
     try {
@@ -93,11 +94,28 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
         const accounts = await getAllAccount(db);
         accountStore.setAllAccount(accounts);
 
+        if (callback) {
+          callback();
+        } else {
+          router.replace("/");
+        }
+
         if (settingStore.settings.autoSwitch) {
           const findAccount = accounts.find(
             (account) => account.login === user.value
           );
-          if (findAccount) accountStore.setCurrentAccount(findAccount);
+          if (findAccount) {
+            accountStore.setCurrentAccount(findAccount);
+            const dateRange = settingStore.settings.dateRange;
+            starStore.setQueryForm({
+              startTimeId: dateRange,
+              keyword: "",
+              language: "",
+            });
+            starStore.syncSearchQueryForm();
+            await starStore.fetchStars(findAccount?.login!);
+            await accountStore.refreshAllAccount();
+          }
         }
 
         if (!accountStore.currentAccount) {
@@ -105,12 +123,6 @@ export default function UserSearch({ callback }: { callback?: () => void }) {
         }
 
         toast.success("Account added");
-
-        if (callback) {
-          callback();
-        } else {
-          router.replace("/");
-        }
       }
     } catch (error) {
       toast.error("Error adding account", {

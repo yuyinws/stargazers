@@ -73,12 +73,13 @@ export async function initDb() {
 
 export async function addStar(db: IDBPDatabase<DB>, star: Star) {
   try {
-    const isExist = await db.getKey('stars', star.id)
-    if (isExist)
-      return
-    const tx = db?.transaction('stars', 'readwrite');
-    await tx?.store?.add(star);
-    await tx?.done;
+    const isExist = await db.get('stars', star.id)
+    if (isExist) {
+      db.put('stars', star);
+    } else {
+      db.add('stars', star);
+    }
+
   } catch (error) {
     console.log(error)
   }
