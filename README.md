@@ -4,7 +4,7 @@ Analyze and explore the stars of any GitHub user.
 
 ## Introduce
 
-[Stargazers](https://github.com/yuyinws/stargazers) is a web application that allows you to add multiple GitHub accounts, allowing you analyze and explore their star lists thoroughly.
+[Stargazers](https://github.com/yuyinws/stargazers) is a web application that allows you to add unlimited GitHub accounts and explore their stars thoroughly.
 
 ![CleanShot 2023-08-28 at 21.35.29@2x](https://cdn.jsdelivr.net/gh/yuyinws/static@master/2023/08/upgit_20230828_1693229767.png)
 
@@ -12,17 +12,13 @@ Analyze and explore the stars of any GitHub user.
 
 ![CleanShot 2023-08-28 at 20.55.31@2x](https://cdn.jsdelivr.net/gh/yuyinws/static@master/2023/08/upgit_20230828_1693227392.png)
 
-
-
 ## Features
 
 - Add accounts through search, GitHub OAuth, or a one-click button (by [UserScript](#UserScript)).
-- Supports adding multiple accounts.
-- Explore star lists by star timestamp, programming language, and repository metadata.
-
-- Analyze the star list to display the user with the most stars and the programming language with the most stars.
-
-- Dark mode support.
+- Supports adding unlimited GitHub accounts.
+- Explore stars by star timestamp, programming language, and repository metadata.
+- Analyze stars.
+- Dark mode support. Mobile support.
 
 
 
