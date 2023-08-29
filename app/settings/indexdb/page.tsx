@@ -60,8 +60,8 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">IndexDB</h3>
-        <p className="text-sm text-muted-foreground">Manage IndexDB</p>
+        <h3 className="text-lg font-medium">IndexedDB</h3>
+        <p className="text-sm text-muted-foreground">Manage IndexedDB</p>
       </div>
 
       <div>
@@ -91,7 +91,8 @@ export default function Settings() {
         <h3 className="text-lg font-medium">Delete</h3>
         <p className="text-sm text-muted-foreground mb-3">
           {" "}
-          If you encounter some unexpected errors, you can try deleting IndexDB.
+          If you encounter some unexpected errors, you can try deleting
+          IndexedDB.
         </p>
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -114,7 +115,7 @@ export default function Settings() {
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
                 This action cannot be undone. This will permanently delete the
-                IndexDB.
+                IndexedDB.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

@@ -17,7 +17,7 @@ const sidebarNavItems = [
     href: "/settings/preferences",
   },
   {
-    title: "IndexDB",
+    title: "IndexedDB",
     href: "/settings/indexdb",
   },
 ];

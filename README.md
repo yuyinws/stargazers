@@ -29,7 +29,8 @@ Analyze and explore the stars of any GitHub user.
 
 A UserScript that adds a button on the GitHub user profile page, allowing you to easily add it to stargazers.
 
-
+## Troubleshooting
+All data is stored in the browser's IndexedDB. If you encounter any unexpected errors, you can try to delete the IndexedDB either from the [settings page](http://stargazers.dev/settings/indexdb) or manually (F12-Application-IndexedDB), then refresh the page.
 
 ## Build with
 
@@ -37,7 +38,7 @@ A UserScript that adds a button on the GitHub user profile page, allowing you to
 
 [shadcn/ui](https://ui.shadcn.com/docs/installation/next)
 
-[Indexdb](https://github.com/jakearchibald/idb)
+[IndexedDB](https://github.com/jakearchibald/idb)
 
 [GitHub GraphQL API](https://docs.github.com/en/graphql)
 
