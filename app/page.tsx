@@ -22,16 +22,16 @@ export default function Home() {
 
   async function getAccount() {
     if (accountStore.currentAccount) {
-      if (accountStore.currentAccount.lastSyncAt) {
-        const dateRange = settingStore.settings.dateRange;
-        starStore.setQueryForm({
-          startTimeId: dateRange,
-        });
-        starStore.setQueryForm({
-          startTime: startTimeMap[dateRange],
-        });
+      const dateRange = settingStore.settings.dateRange;
+      starStore.setQueryForm({
+        startTimeId: dateRange,
+      });
+      starStore.setQueryForm({
+        startTime: startTimeMap[dateRange],
+      });
 
-        starStore.syncSearchQueryForm();
+      starStore.syncSearchQueryForm();
+      if (accountStore.currentAccount.lastSyncAt) {
         await starStore.getStarFromIndexDB(accountStore!.currentAccount!.login);
       } else {
         await starStore.fetchStars(accountStore.currentAccount.login);
