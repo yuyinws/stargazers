@@ -116,7 +116,7 @@ export const useStarStore = create<StarStore>((set, get) => {
         const addTransactions: any[] = []
 
         const fetchByCursor = async (cursor: string) => {
-          const response = await fetch(`/api/gh/stars?username=${username}&cursor=${cursor}`);
+          const response = await fetch(`/api/gh/stars/${username}/${cursor}`);
           const data = await response.json();
 
           if (data.errors) {

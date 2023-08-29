@@ -41,11 +41,13 @@ query GetStarredRepositories($username: String!, $cursor: String) {
 }
 `;
 
+export const runtime = 'edge';
+
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url)
-    const username = searchParams.get('username')
-    const cursor = searchParams.get('cursor')
+    const { pathname } = new URL(request.url)
+    const username = pathname.split('/')[4]
+    const cursor = pathname.split('/')[5] || ''
     if (!username) {
       return NextResponse.json({ errors: 'username is required' }, { status: 500 })
     }
@@ -95,17 +97,25 @@ export async function GET(request: Request) {
 
     const pageInfo = data?.data?.user?.starredRepositories?.pageInfo
 
-    return NextResponse.json({
+    return new Response(JSON.stringify({
       state: 'success',
       data: {
         stars: formatedStars,
         pageInfo
       },
-    })
+    }),
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400',
+          'CDN-Cache-Control': 'public, s-maxage=86400',
+          'Vercel-CDN-Cache-Control': 'public, s-maxage=86400',
+        },
+      })
   } catch (error) {
     console.log(error)
     return NextResponse.json(
-      { error: error }, 
+      { error: error },
       { status: 500 }
     )
   }
