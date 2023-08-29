@@ -157,8 +157,10 @@ export const useStarStore = create<StarStore>((set, get) => {
 
         await store.put(updateData)
 
+        const searchQueryForm = cloneDeep(get().searchQueryForm)
+        searchQueryForm.startTime = searchQueryForm.startTimeId ? getUnixTime(startTimeMap[searchQueryForm.startTimeId]) : -Infinity
         const results = await searchStar(db, username, {
-          ...get().queryForm,
+          ...searchQueryForm,
           page: get().pagination.page,
           size: get().pagination.size
         })
