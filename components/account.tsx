@@ -24,7 +24,6 @@ import { useStarStore, useAccountStore, useSettingStore } from "@/store";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { subMonths } from "date-fns";
 
 export default function Account() {
   const [open, setOpen] = useState(false);
@@ -50,51 +49,55 @@ export default function Account() {
           </div>
         ) : null}
       </PopoverTrigger>
-      <PopoverContent className="w-[13rem] px-1 py-1 mt-2">
+      <PopoverContent className="w-[13rem] px-0 py-1 mt-2">
         <div>
-          {allAccount?.map((account) => (
-            <div
-              key={account.login}
-              onClick={async () => {
-                if (currentAccount?.login === account.login) return;
-                setCurrentAccount(account);
-                setOpen(false);
-                setQueryForm({
-                  startTimeId: settings.dateRange,
-                  keyword: "",
-                  language: "",
-                });
+          <div className="max-h-[13rem] px-2 overflow-auto">
+            {allAccount?.map((account) => (
+              <div
+                key={account.login}
+                onClick={async () => {
+                  if (currentAccount?.login === account.login) return;
+                  setCurrentAccount(account);
+                  setOpen(false);
+                  setQueryForm({
+                    startTimeId: settings.dateRange,
+                    keyword: "",
+                    language: "",
+                  });
 
-                syncSearchQueryForm();
+                  syncSearchQueryForm();
 
-                if (!account.lastSyncAt) {
-                  await fetchStars(account.login);
-                  await refreshAllAccount();
-                } else {
-                  getStarFromIndexDB(account.login);
-                }
-              }}
-              className={[
-                "flex py-1.5 px-2 rounded-sm justify-between items-center hover:bg-accent",
-                currentAccount?.login === account.login
-                  ? "cursor-not-allowed"
-                  : "cursor-pointer",
-              ].join(" ")}
-            >
-              <div className="flex gap-2">
-                <Avatar className={cn("h-[1.4rem] w-[1.4rem] cursor-pointer")}>
-                  <AvatarImage src={account.avatarUrl} />
-                  <AvatarFallback>
-                    <Skeleton className="h-[1.4rem] w-[1.4rem] rounded-full"></Skeleton>
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm">{account.name}</span>
+                  if (!account.lastSyncAt) {
+                    await fetchStars(account.login);
+                    await refreshAllAccount();
+                  } else {
+                    getStarFromIndexDB(account.login);
+                  }
+                }}
+                className={[
+                  "flex py-1.5 px-2 rounded-sm justify-between items-center hover:bg-accent",
+                  currentAccount?.login === account.login
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer",
+                ].join(" ")}
+              >
+                <div className="flex gap-2">
+                  <Avatar
+                    className={cn("h-[1.4rem] w-[1.4rem] cursor-pointer")}
+                  >
+                    <AvatarImage src={account.avatarUrl} />
+                    <AvatarFallback>
+                      <Skeleton className="h-[1.4rem] w-[1.4rem] rounded-full"></Skeleton>
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm">{account.name}</span>
+                </div>
+                {currentAccount!.login === account.login && (
+                  <CheckIcon className="text-accent-foreground h-[1rem] w-[1rem]"></CheckIcon>
+                )}
               </div>
-              {currentAccount!.login === account.login && (
-                <CheckIcon className="text-accent-foreground h-[1rem] w-[1rem]"></CheckIcon>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
           <Separator className="my-1"></Separator>
           <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <AlertDialogTrigger asChild>

@@ -15,9 +15,9 @@ import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
-  const starStore = useStore(useStarStore, (state) => state)!;
-  const accountStore = useStore(useAccountStore, (state) => state)!;
-  const settingStore = useStore(useSettingStore, (state) => state)!;
+  const starStore = useStarStore();
+  const accountStore = useAccountStore();
+  const settingStore = useSettingStore();
   const router = useRouter();
 
   async function getAccount() {
@@ -46,7 +46,7 @@ export default function Home() {
     if (accountStore) {
       getAccount();
     }
-  }, [accountStore?.allAccount]);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col gap-3 w-[22rem] lg:w-[46rem] xl:w-[70rem] 2xl:w-[92rem] m-auto pt-2 pb-10">
