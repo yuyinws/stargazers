@@ -4,7 +4,7 @@ Analyze and explore the stars of any GitHub user.
 
 ## Introduce
 
-[Stargazers](https://stargazers.dev) is a web application that allows you to add unlimited GitHub accounts and analyze and explore the star list of these accounts.
+[Stargazers](https://star.yuy1n.io) is a web application that allows you to add unlimited GitHub accounts and analyze and explore the star list of these accounts.
 
 ![CleanShot 2023-08-28 at 21.35.29@2x](https://cdn.jsdelivr.net/gh/yuyinws/static@master/2023/08/upgit_20230828_1693229767.png)
 
